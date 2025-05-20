@@ -15,6 +15,9 @@ namespace FrontEndTicketPro.Controllers
 
         public IActionResult Index()
         {
+            HttpContext.Session.SetString("Rol", "admin");
+
+            ViewBag.Rol = "cliente"; // o "tecnico", "admin"
             return View();
         }
 
