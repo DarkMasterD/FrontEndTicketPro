@@ -1,0 +1,117 @@
+﻿@{
+    ViewData["Title"] = "Inicio - Administrador";
+}
+@{
+    var resumen = ViewBag.Resumen as FrontEndTicketPro.Models.Admin.DashboardResumen;
+    var tickets = ViewBag.Tickets as List<FrontEndTicketPro.Models.Admin.TablaTicketsInicio>;
+}
+
+<div class="container mt-4 bg-white p-5">
+    <div class="d-flex justify-content-between align-items-start flex-wrap mb-4">
+        <h3 class="fw-bold">Hola, Admin 👋 Bienvenido a TicketPro</h3>
+        <div class="d-flex gap-2">
+            <a class="btn btn-dark" asp-controller="Ticket" asp-action="Crear">
+                <i class="bi bi-plus-circle"></i> Crear un nuevo Ticket
+            </a>
+            <button class="btn btn-secondary" disabled>
+                <i class="bi bi-person-plus"></i> Crear un nuevo Usuario
+            </button>
+        </div>
+    </div>
+
+    <p class="fs-4">Resumen</p>
+    <!-- Resumen -->
+    <div class="row g-3 mb-4 border p-3">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="p-2 rounded-pill text-center text-dark fw-bold" style="background-color: #ffe033;">
+                    <i class="bi bi-ban text-danger fs-5"></i> <strong class="text-decoration-underline">@resumen.TicketsNoAsignados</strong> Tickets no asignados
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-2 rounded-pill text-center text-white fw-bold" style="background-color: #2196f3;">
+                    <i class="bi bi-tools fs-5 text-dark"></i> <strong class="text-decoration-underline">@resumen.TicketsEnProgreso</strong> Tickets en progreso
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-2 rounded-pill text-center text-white fw-bold" style="background-color: #f44336;">
+                    <i class="bi bi-fire fs-5"></i> <strong class="text-decoration-underline">@resumen.TicketsCriticos</strong> Tickets críticos
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="p-2 rounded-pill text-center text-white fw-bold" style="background-color: #8bc34a;">
+                    <i class="bi bi-check-square-fill fs-5 text-success"></i> <strong class="text-decoration-underline">@resumen.TicketsResueltos</strong> Tickets resueltos
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gestión de Tickets -->
+    <p class="fs-4 mb-0">Gestión de Tickets</p>
+    <div>
+        <div class="row g-2 justify-content-between align-items-center mb-3">
+            <div class="col-md-6 w-75">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Buscar ticket…" style="background: #F1F3F6;" />
+                    <button class="btn btn-dark">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col-auto">
+                <select class="form-select">
+                    <option>Filtrar por estado</option>
+                    <option>En progreso</option>
+                    <option>No asignado</option>
+                    <option>Resuelto</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>Título del ticket</th>
+                        <th>Cliente</th>
+                        <th>Técnico</th>
+                        <th>Estado</th>
+                        <th>Prioridad</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in tickets)
+                    {
+                        <tr>
+                            <td>@t.Titulo</td>
+                            <td>@t.Cliente</td>
+                            <td>@(string.IsNullOrEmpty(t.Tecnico) ? "No asignado" : t.Tecnico)</td>
+                            <td>
+                                <span class="badge @(t.Estado == "Resuelto" ? "bg-success" :
+                                              t.Estado == "No asignado" ? "bg-warning text-dark" :
+                                              "bg-primary")">
+                                    @t.Estado
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge @(t.Prioridad == "Crítico" ? "bg-danger" :
+                                              t.Prioridad == "Baja" ? "bg-warning" :
+                                              "bg-info text-dark")">
+                                    @t.Prioridad
+                                </span>
+                            </td>
+                            <td>@t.Fecha.ToString("MM/dd/yy")</td>
+                            <td>
+                                <a class="btn btn-sm text-light" style="background: #8FD344;">Asignar</a>
+                                <a class="btn btn-info btn-sm text-white" style="background: #3498DB">Ver</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
