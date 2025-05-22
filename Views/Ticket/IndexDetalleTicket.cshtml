@@ -1,0 +1,88 @@
+﻿@model FrontEndTicketPro.Models.ticketDetalleDTO
+@{
+}
+
+<style>
+    label{
+        font-size: 17px;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="h4 mb-4 justify-content-center text-center">Detalle del ticket</div>
+
+    <div class="d-flex gap-5">
+        <div class="col-6">
+            <div class="mb-3">
+                <label class="form-label"><strong>Título:</strong></label>
+                <input type="text" class="form-control" @* value="@Model.Titulo" *@ />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Aplicación o servicio:</strong></label>
+                <input type="text" class="form-control" @* value="@Model.Servicio" *@ />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label"><strong>Descripción:</strong></label>
+                <textarea class="form-control" rows="3">@* @Model.Descripcion *@</textarea>
+            </div>
+
+            <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <label class="form-label mb-0"><strong>Cliente afectado:</strong></label>
+                    <div class="d-flex align-items-center gap-2">
+                        <label class="form-label mb-0"><strong>Archivos adjuntos:</strong></label>
+                        <a href="#">Click aquí</a>
+                    </div>
+                </div>
+                <textarea class="form-control" rows="3">
+                    @* @Model.Cliente_Afectado
+                    @Model.Correo
+                    @Model.Telefono *@
+                </textarea>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="mb-3">
+                <label class="form-label"><strong>Ticket:</strong></label>
+                <input type="text" class="form-control" @* value="@Model.Ticket" *@ />
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label"><strong>Prioridad:</strong></label>
+                <input type="text" class="form-control" @* value="@Model.Categoria_Ticket" *@ />
+            </div>
+
+            <div class="mb-3">
+                <label for="categoria" class="form-label"><strong>Categoría del ticket:</strong></label>
+                <select class="form-select" id="categoria" name="categoria">
+                    <option value="Critico">Crítico</option>
+                    <option value="Importante">Importante</option>
+                    <option value="Baja">Baja</option>
+                </select>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-end gap-4">
+                <div class="d-flex align-items-center gap-2 w-75">
+                    <label for="estado" class="form-label mb-0"><strong>Estado:</strong></label>
+                    <select class="form-select" id="estado" name="estado" style="width: 170px;">
+                        <option value="En Progreso">En Progreso</option>
+                        <option value="No asignado">No asignado</option>
+                        <option value="Resuelto">Resuelto</option>
+                        <option value="En espera de información del cliente">En espera de información del cliente</option>
+                    </select>
+                </div>
+                <button class="btn btn-secondary py-0 px-3" style="height: 38px; width: 150px;">Ver tareas</button>
+            </div>
+
+
+
+            <div class="d-flex justify-content-between" style="margin-top: 85px">
+                <button class="btn btn-secondary col-5">Actualizar Ticket</button>
+                <button class="btn btn-success col-5">Cerrar Ticket</button>
+            </div>
+        </div>
+    </div>
+</div>
