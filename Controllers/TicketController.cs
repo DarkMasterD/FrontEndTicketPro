@@ -19,5 +19,11 @@ namespace FrontEndTicketPro.Controllers
             var tickets = await _http.GetFromJsonAsync<List<ticket>>("api/ticket");
             return View(tickets);
         }
+
+        public async Task<IActionResult> IndexDetalleTicket()
+        {
+            var datosDetalleTicket = await _http.GetFromJsonAsync<List<ticketDetalleDTO>>("api/ticket/ListarDetalle");
+            return View(datosDetalleTicket);
+        }
     }
 }
