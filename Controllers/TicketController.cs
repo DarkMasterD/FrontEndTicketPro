@@ -20,11 +20,6 @@ namespace FrontEndTicketPro.Controllers
             return View(tickets);
         }
 
-        //public async Task<IActionResult> CrearTicket()
-        //{
-        //    return View();
-        //}
-
         //para las categorias 
         public async Task<IActionResult> CrearTicket()
         {
@@ -36,13 +31,25 @@ namespace FrontEndTicketPro.Controllers
                 categorias = await response.Content.ReadFromJsonAsync<List<categoria_ticket>>();
             }
 
+            // Obtener usuarios
+            var usuarios = new List<UsuarioDTO>();
+            var responseUsuarios = await _http.GetAsync("/api/usuario");
+
+            if (responseUsuarios.IsSuccessStatusCode)
+            {
+                usuarios = await responseUsuarios.Content.ReadFromJsonAsync<List<UsuarioDTO>>();
+            }
+
             var modelo = new CrearTicketViewModel
             {
                 Ticket = new ticket(),
                 Categorias = categorias
             };
 
-            return View(modelo); // 🔴 ESTA línea debe existir, no `View();`
+            ViewBag.Usuarios = usuarios;
+
+
+            return View(modelo);
         }
 
     }

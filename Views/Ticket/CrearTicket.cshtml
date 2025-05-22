@@ -12,10 +12,18 @@
         <div class="d-flex justify-content-between">
             <div class="w-100 me-5">
                 <!-- Código del ticket (solo lectura) -->
-                <div class="">
+                @* <div class=""> *@
+                @*     <label>Código del ticket</label> *@
+                @*     <input type="text" class="form-control" placeholder="El código será generado automáticamente al crear el ticket." disabled /> *@
+                @* </div> *@
+                <div class="mb-3">
                     <label>Código del ticket</label>
-                    <input type="text" class="form-control" placeholder="El código será generado automáticamente al crear el ticket." disabled />
+                    <div class="input-group">
+                        <input asp-for="Ticket.codigo" id="codigoTicket" class="form-control" readonly />
+                        <button type="button" class="btn btn-outline-primary" onclick="generarCodigo()">Generar Código</button>
+                    </div>
                 </div>
+
                 <!-- Título del ticket -->
                 <div class="">
                     <label>Título del ticket</label>
@@ -26,14 +34,16 @@
                     <label>Descripción</label>
                     <textarea asp-for="Ticket.descripcion" class="form-control" rows="4" placeholder="Ingrese una descripción del problema" required></textarea>
                 </div>
-                <!-- Info del remitente -->
-                <div class="">
+                <div class="mb-3">
                     <label>Información de la persona que envía el ticket</label>
-                    <div class="border rounded p-3 bg-light">
-                        <p class="mb-1"><strong>Nombre:</strong> @User.Identity.Name</p>
-                        <p class="mb-1"><strong>Correo:</strong> example@gmail.com</p>
-                        <p class="mb-0"><strong>Teléfono:</strong> +503 7865-1299</p>
+                    <div class="border rounded p-3 bg-light" id="infoUsuario">
+                        <p><strong>Nombre:</strong> <span id="nombre_usuario">-</span></p>
+                        <p><strong>Correo:</strong> <span id="correo_usuario">-</span></p>
+                        <p><strong>Teléfono:</strong> <span id="telefono_usuario">-</span></p>
                     </div>
+                    <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#modalUsuarios">
+                        Seleccionar usuario
+                    </button>
                 </div>
             </div>
             <div class="w-100">
@@ -63,6 +73,9 @@
                         <option>Baja</option>
                     </select>
                 </div>
+
+                <!--Guardar id del usuario-->
+                <input type="hidden" asp-for="Ticket.id_usuario" id="id_usuario" />
                 <!-- Archivos de respaldo -->
                 <div class="">
                     <label>Archivos de respaldo</label>
@@ -77,3 +90,89 @@
         </div>
     </form>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalUsuarios" tabindex="-1" aria-labelledby="modalUsuariosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalUsuariosLabel">Seleccionar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Teléfono</th>
+                            <th>Seleccionar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @* Reemplaza esto con tu lista de usuarios *@
+                        @foreach (var user in ViewBag.Usuarios as List<FrontEndTicketPro.Models.UsuarioDTO>)
+                        {
+                            <tr>
+                                <td>@user.nombre_usuario</td>
+                                <td>@user.email</td>
+                                <td>@user.telefono</td>
+                                <td>
+                                    <button type="button" class="btn btn-success btn-sm"
+                                            onclick="seleccionarUsuario(@user.id_usuario, '@user.nombre_usuario', '@user.email', '@user.telefono', '@user.tipo_usuario')"
+                                            data-bs-dismiss="modal">
+                                        Seleccionar
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let tipoUsuarioSeleccionado = null;
+
+    function seleccionarUsuario(id, nombre, correo, telefono, tipoUsuario) {
+        document.getElementById("id_usuario").value = id;
+        document.getElementById("nombre_usuario").innerText = nombre;
+        document.getElementById("correo_usuario").innerText = correo;
+        document.getElementById("telefono_usuario").innerText = telefono;
+
+        tipoUsuarioSeleccionado = tipoUsuario; // 'I' o 'E'
+    }
+
+    function generarCodigo() {
+        const prioridad = document.querySelector('[name="Ticket.prioridad"]').value;
+        if (!tipoUsuarioSeleccionado) {
+            alert("Por favor selecciona un usuario antes de generar el código.");
+            return;
+        }
+
+
+        if (!prioridad) {
+            alert("Por favor selecciona una prioridad primero.");
+            return;
+        }
+
+        fetch(`https://localhost:7141/api/ticket/generar-codigo?prioridad=${prioridad}&tipoUsuario=${tipoUsuarioSeleccionado}`)
+                .then(async response => {
+                    if (!response.ok) throw new Error("Error HTTP " + response.status);
+                    return await response.json();
+                })
+
+            .then(data => {
+                document.getElementById("codigoTicket").value = data.codigo;
+            })
+            .catch(error => {
+                console.error("Error generando código:", error);
+                alert("Hubo un problema al generar el código.");
+            });
+    }
+</script>
+
+
+
