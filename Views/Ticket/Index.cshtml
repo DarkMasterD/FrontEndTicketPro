@@ -1,0 +1,23 @@
+﻿@model List<FrontEndTicketPro.Models.ticket>
+
+<h2>Listado de Tickets</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var ticket in Model)
+        {
+            <tr>
+                <td>@ticket.id_ticket</td>
+                <td>@ticket.titulo</td>
+                <td>@ticket.estado</td>
+            </tr>
+        }
+    </tbody>
+</table>
