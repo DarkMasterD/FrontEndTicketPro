@@ -1,0 +1,79 @@
+﻿@* @model FrontEndTicketPro.Models.ticket *@
+@model FrontEndTicketPro.Models.CrearTicketViewModel
+
+@{
+    ViewData["Title"] = "Crear Ticket - Administrador";
+}
+
+<div class="container">
+    <h3 class="text-center">👨‍💻 Crear Nuevo Ticket</h3>
+
+    <form asp-action="Create" enctype="multipart/form-data" method="post">
+        <div class="d-flex justify-content-between">
+            <div class="w-100 me-5">
+                <!-- Código del ticket (solo lectura) -->
+                <div class="">
+                    <label>Código del ticket</label>
+                    <input type="text" class="form-control" placeholder="El código será generado automáticamente al crear el ticket." disabled />
+                </div>
+                <!-- Título del ticket -->
+                <div class="">
+                    <label>Título del ticket</label>
+                    <input asp-for="Ticket.titulo" class="form-control" placeholder="Título del ticket" required />
+                </div>
+                <!-- Descripción -->
+                <div class="">
+                    <label>Descripción</label>
+                    <textarea asp-for="Ticket.descripcion" class="form-control" rows="4" placeholder="Ingrese una descripción del problema" required></textarea>
+                </div>
+                <!-- Info del remitente -->
+                <div class="">
+                    <label>Información de la persona que envía el ticket</label>
+                    <div class="border rounded p-3 bg-light">
+                        <p class="mb-1"><strong>Nombre:</strong> @User.Identity.Name</p>
+                        <p class="mb-1"><strong>Correo:</strong> example@gmail.com</p>
+                        <p class="mb-0"><strong>Teléfono:</strong> +503 7865-1299</p>
+                    </div>
+                </div>
+            </div>
+            <div class="w-100">
+                <!-- Nombre de la Aplicación o Servicio -->
+                <div class="">
+                    <label>Nombre de la Aplicación o Servicio</label>
+                    <input asp-for="Ticket.servicio" class="form-control" placeholder="Aplicación afectada o nuevo servicio" required />
+                </div>
+                <!-- Categoría -->
+                <div class="">
+                    <label>Categoría</label>
+                    <select asp-for="Ticket.id_categoria_ticket" class="form-control" required>
+                        <option value="">Seleccione la categoría</option>
+                        @foreach (var cat in Model.Categorias)
+                        {
+                            <option value="@cat.id_categoria_ticket">@cat.nombre</option>
+                        }
+                    </select>
+                </div>
+                <!-- Prioridad -->
+                <div class="mb-4">
+                    <label>Prioridad</label>
+                    <select asp-for="Ticket.prioridad" class="form-control" required>
+                        <option value="">Seleccione la prioridad</option>
+                        <option>Crítico</option>
+                        <option>Importante</option>
+                        <option>Baja</option>
+                    </select>
+                </div>
+                <!-- Archivos de respaldo -->
+                <div class="">
+                    <label>Archivos de respaldo</label>
+                    <input asp-for="Ticket.servicio" type="file" accept=".jpg,.jpeg,.png,.pdf" class="form-control" />
+                </div>
+                <div class="mt-5 d-flex justify-content-center gap-3">
+                    <a asp-action="Index" class="btn btn-outline-dark me-2 w-50">Cancelar</a>
+                    <button type="submit" class="btn w-50 text-white" style="background-color: #8FD344">Crear Ticket</button>
+                </div>
+            </div>
+            
+        </div>
+    </form>
+</div>
