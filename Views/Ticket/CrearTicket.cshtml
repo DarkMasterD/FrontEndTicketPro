@@ -194,6 +194,25 @@
             }
 
             const data = await response.json();
+            //Agregar archivo por ticket
+                const archivoInput = document.querySelector('input[type="file"]');
+                const archivo = archivoInput.files[0];
+
+                if (archivo) {
+                    const formData = new FormData();
+                    formData.append("archivo", archivo);
+                    formData.append("id_ticket", data.id); //el id retornado al crear ticket
+
+                    await fetch("https://localhost:7141/api/ticket/subir-archivo", {
+                        method: "POST",
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(r => console.log("Archivo subido", r))
+                    .catch(err => console.error("Error subiendo archivo", err));
+                }
+
+            //=============
             alert("Ticket creado correctamente ✅");
             window.location.href = "/Ticket/Index";
 
