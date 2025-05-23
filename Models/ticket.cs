@@ -20,6 +20,7 @@ namespace FrontEndTicketPro.Models
 
     public class ticketDetalleDTO
     {
+        public int id_ticket { get; set; }
         public string Titulo { get; set; }
         public string Servicio { get; set; }
         public string Descripcion { get; set; }

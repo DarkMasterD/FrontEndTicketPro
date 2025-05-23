@@ -20,18 +20,17 @@ namespace FrontEndTicketPro.Controllers
             return View(tickets);
         }
 
-        public async Task<IActionResult> IndexDetalleTicket()
+        public async Task<IActionResult> IndexDetalleTicket(int id_ticket)
         {
-            var datosDetalleTicket = await _http.GetFromJsonAsync<List<ticketDetalleDTO>>("api/ticket/ListarDetalle");
+            //SE TIENE QUE RECUPERAR EL ID DEL TICKET DE LA PANTALLA ANTERIOR
+            var datosDetalleTicket = await _http.GetFromJsonAsync<List<ticketDetalleDTO>>($"api/ticket/ListarDetalle?idTicket={id_ticket}");
+            ViewBag.id_ticket = id_ticket; // Guardar el id_ticket en ViewBag para usarlo en la vista
             return View(datosDetalleTicket);
         }
 
         [HttpPost]
         public async Task<IActionResult> ActualizarTicketEstado(int id_ticket, string estado)
         {
-            //CAMBIAR ESTO CUANDO HAYA VISTA DE TICKETS
-            id_ticket = 2; // Cambiar por el id del ticket que se va a actualizar
-
 
             if (id_ticket <= 0 || string.IsNullOrEmpty(estado))
                 return BadRequest("Datos inválidos");
@@ -47,12 +46,38 @@ namespace FrontEndTicketPro.Controllers
             if (response.IsSuccessStatusCode)
             {
                 TempData["Mensaje"] = "Ticket actualizado correctamente";
-                return RedirectToAction("IndexDetalleTicket"); // o la vista donde estás mostrando el ticket
+                return RedirectToAction("IndexDetalleTicket", new { id_ticket = id_ticket}); // o la vista donde estás mostrando el ticket
             }
             else
             {
                 TempData["Error"] = await response.Content.ReadAsStringAsync();
                 return RedirectToAction("IndexDetalleTicket");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CerrarTicket(int id_ticket)
+        {
+            if (id_ticket <= 0)
+                return BadRequest("ID inválido");
+
+            var data = new ticketEstadoUpdateModel
+            {
+                id_ticket = id_ticket,
+                estado = "Resuelto" // o "Cerrado", según tu lógica de negocio
+            };
+
+            var response = await _http.PostAsJsonAsync("api/ticket/actualizarTicket", data);
+
+            if (response.IsSuccessStatusCode)
+            {
+                TempData["Mensaje"] = "Ticket cerrado correctamente";
+                return RedirectToAction("IndexDetalleTicket", new { id_ticket = id_ticket });
+            }
+            else
+            {
+                TempData["Error"] = await response.Content.ReadAsStringAsync();
+                return RedirectToAction("IndexDetalleTicket", new { id_ticket = id_ticket });
             }
         }
     }
