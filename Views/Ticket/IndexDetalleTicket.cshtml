@@ -1,8 +1,8 @@
 ﻿@model List<FrontEndTicketPro.Models.ticketDetalleDTO>
 
 @{
-    var ticket = Model.FirstOrDefault(); // toma el primer ticket o null si la lista está vacía
-    // Listas estáticas para opciones
+    var ticket = Model.FirstOrDefault();
+
     var prioridades = new List<SelectListItem> {
         new SelectListItem { Value = "Crítico", Text = "Crítico" },
         new SelectListItem { Value = "Importante", Text = "Importante" },
@@ -10,10 +10,10 @@
     };
 
     var estados = new List<SelectListItem> {
-        new SelectListItem { Value = "En Progreso", Text = "En Progreso" }, /* Color azul */
-        new SelectListItem { Value = "No asignado", Text = "No asignado" },/* Color amarillo */
-        new SelectListItem { Value = "Resuelto", Text = "Resuelto" }, /* Color verde */
-        new SelectListItem { Value = "En espera de información del cliente", Text = "En espera de información del cliente" } /* tu decision */
+        new SelectListItem { Value = "En Progreso", Text = "En Progreso" },
+        new SelectListItem { Value = "No asignado", Text = "No asignado" },
+        new SelectListItem { Value = "Resuelto", Text = "Resuelto" },
+        new SelectListItem { Value = "En espera de información del cliente", Text = "En espera de información del cliente" }
     };
 }
 
@@ -28,24 +28,40 @@ else
             font-size: 17px;
         }
 
-        .estado-en-progreso {
-            background-color: #0d6efd; /* Azul Bootstrap */
-            color: white;
+        input.estado-en-progreso {
+            background-color: #0d6efd !important;
+            color: white !important;
         }
 
-        .estado-no-asignado {
-            background-color: #ffc107; /* Amarillo Bootstrap */
-            color: black;
+        input.estado-no-asignado {
+            background-color: #ffc107 !important;
+            color: black !important;
         }
 
-        .estado-resuelto {
-            background-color: #198754; /* Verde Bootstrap */
-            color: white;
+        input.estado-resuelto {
+            background-color: #198754 !important;
+            color: white !important;
         }
 
-        .estado-en-espera {
-            background-color: #6c757d; /* Gris Bootstrap */
-            color: white;
+        input.estado-en-espera {
+            background-color: #6c757d !important;
+            color: white !important;
+        }
+
+        /* Prioridades */
+        input.prioridad-critico {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+
+        input.prioridad-importante {
+            background-color: #fd7e14 !important;
+            color: white !important;
+        }
+
+        input.prioridad-baja {
+            background-color: #198754 !important;
+            color: white !important;
         }
     </style>
 
@@ -56,17 +72,17 @@ else
             <div class="col-6">
                 <div class="mb-3">
                     <label class="form-label"><strong>Título:</strong></label>
-                    <input type="text" class="form-control" value="@ticket.Titulo" />
+                    <input type="text" class="form-control" value="@ticket.Titulo" readonly/>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label"><strong>Aplicación o servicio:</strong></label>
-                    <input type="text" class="form-control" value="@ticket.Servicio" />
+                    <input type="text" class="form-control" value="@ticket.Servicio" readonly/>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label"><strong>Descripción:</strong></label>
-                    <textarea class="form-control" rows="3">@ticket.Descripcion</textarea>
+                    <textarea class="form-control" rows="3" readonly>@ticket.Descripcion</textarea>
                 </div>
 
                 <div class="mb-3">
@@ -77,10 +93,8 @@ else
                             <a href="#">Click aquí</a>
                         </div>
                     </div>
-                    <textarea class="form-control" rows="3" style="white-space: pre-wrap; text-align: left; font-size:large" readonly>
-                    @ticket.Cliente_Afectado
-                    @ticket.Correo
-                    @ticket.Telefono
+                    <textarea class="form-control" rows="3" style="white-space: pre-wrap; font-size:large" readonly>
+                        @($"{ticket.Cliente_Afectado}\n{ticket.Correo}\n{ticket.Telefono}")
                     </textarea>
                 </div>
             </div>
@@ -88,54 +102,70 @@ else
             <div class="col-6">
                 <div class="mb-3">
                     <label class="form-label"><strong>Ticket:</strong></label>
-                    <input type="text" class="form-control" value="@ticket.Codigo" readonly/>
+                    <input type="text" class="form-control" value="@ticket.Codigo" readonly />
                 </div>
 
                 <div class="mb-4">
                     <label class="form-label"><strong>Categoria:</strong></label>
-                    <input type="text" class="form-control" value="@ticket.Categoria_Ticket" />
+                    <input type="text" class="form-control" value="@ticket.Categoria_Ticket" readonly/>
                 </div>
 
                 <div class="mb-3">
                     <label><strong>Prioridad:</strong></label>
-                    <select class="form-select" name="Prioridad_@ticket.Prioridad">
-                        @foreach (var p in prioridades)
-                        {
-                            if (p.Value == ticket.Prioridad)
-                            {
-                                <option value="@p.Value" selected>@p.Text</option>
-                            }
-                            else
-                            {
-                                <option value="@p.Value">@p.Text</option>
-                            }
-                        }
-                    </select>
+                    <input type="text" class="form-control" id="prioridad" value="@ticket.Prioridad.Trim()" readonly />
                 </div>
 
                 <div class="d-flex justify-content-between align-items-end gap-4">
                     <div class="d-flex align-items-center gap-2 w-75">
                         <label for="estado" class="form-label mb-0"><strong>Estado:</strong></label>
-                        <select class="form-select" id="estado" name="estado_@ticket.Estado" 
-                                style="width: 170px;" onchange="cambiarColor(this)">
-                            @foreach(var e in estados)
-                            {
-                                if(e.Value == ticket.Estado)
-                                {
-                                    <option value ="@e.Value" selected>@e.Text</option>
-                                }
-                                else
-                                {
-                                    <option value="@e.Value">@e.Text</option>
-                                }
-                            }
-                        </select>
+                        <input type="text" class="form-control" id="estado" value="@ticket.Estado.Trim()" style="width: 170px;" readonly />
                     </div>
                     <button class="btn btn-secondary py-0 px-3" style="height: 38px;">Ver tareas</button>
                 </div>
 
                 <div class="d-flex justify-content-between" style="margin-top: 85px">
-                    <button class="btn btn-secondary col-5">Actualizar Ticket</button>
+                    <button class="btn btn-secondary col-5" data-bs-toggle="modal" data-bs-target="#ModalEstadoTicket">Actualizar Ticket</button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="ModalEstadoTicket" tabindex="-1" aria-labelledby="ModalEstadoTicketLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form asp-action="ActualizarTicketEstado" method="post">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="ModalEstadoTicketLabel">Cambiar estado del ticket</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <!-- Hidden para enviar el id del ticket -->
+                                        <input type="hidden" name="id_ticket" id="id_ticket_modal" value="" />
+
+                                        <div class="mb-3">
+                                            <label for="estadoModalSelect" class="form-label">Estado</label>
+                                            <select class="form-select" id="estadoModalSelect" name="estado" required>
+                                                @foreach (var e in estados)
+                                                {
+                                                    if (e.Value == ticket.Estado)
+                                                    {
+                                                        <option value="@e.Value" selected>@e.Text</option>
+                                                    }
+                                                    else
+                                                    {
+                                                        <option value="@e.Value">@e.Text</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                        <button type="submit" class="btn btn-success">Guardar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
                     <button class="btn btn-success col-5">Cerrar Ticket</button>
                 </div>
             </div>
@@ -144,31 +174,39 @@ else
 }
 
 <script>
-    function cambiarColor(select) {
-        // Remueve clases anteriores
-        select.classList.remove("estado-en-progreso", "estado-no-asignado", "estado-resuelto", "estado-en-espera");
-
-        switch (select.value) {
+    function aplicarColorEstado(element) {
+        if (!element) return;
+        element.classList.remove("estado-en-progreso", "estado-no-asignado", "estado-resuelto", "estado-en-espera");
+        switch (element.value.trim()) {
             case "En Progreso":
-                select.classList.add("estado-en-progreso");
-                break;
+                element.classList.add("estado-en-progreso"); break;
             case "No asignado":
-                select.classList.add("estado-no-asignado");
-                break;
+                element.classList.add("estado-no-asignado"); break;
             case "Resuelto":
-                select.classList.add("estado-resuelto");
-                break;
+                element.classList.add("estado-resuelto"); break;
             case "En espera de información del cliente":
-                select.classList.add("estado-en-espera");
-                break;
+                element.classList.add("estado-en-espera"); break;
         }
     }
 
-    // Aplica el color correcto al cargar la página
+    function aplicarColorPrioridad(element) {
+        if (!element) return;
+        element.classList.remove("prioridad-critico", "prioridad-importante", "prioridad-baja");
+        switch (element.value.trim()) {
+            case "Crítico":
+                element.classList.add("prioridad-critico"); break;
+            case "Importante":
+                element.classList.add("prioridad-importante"); break;
+            case "Baja":
+                element.classList.add("prioridad-baja"); break;
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
-        const select = document.getElementById("estado");
-        cambiarColor(select);
+        const estadoInput = document.getElementById("estado");
+        const prioridadInput = document.getElementById("prioridad");
+
+        aplicarColorEstado(estadoInput);
+        aplicarColorPrioridad(prioridadInput);
     });
 </script>
-
-
