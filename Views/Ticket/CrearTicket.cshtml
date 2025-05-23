@@ -1,5 +1,4 @@
-﻿@* @model FrontEndTicketPro.Models.ticket *@
-@model FrontEndTicketPro.Models.CrearTicketViewModel
+﻿@model FrontEndTicketPro.Models.CrearTicketViewModel
 
 @{
     ViewData["Title"] = "Crear Ticket - Administrador";
@@ -8,65 +7,58 @@
 <div class="container">
     <h3 class="text-center">👨‍💻 Crear Nuevo Ticket</h3>
 
-    <form asp-action="Create" enctype="multipart/form-data" method="post">
+    <form id="formCrearTicket" enctype="multipart/form-data">
         <div class="d-flex justify-content-between">
             <div class="w-100 me-5">
-                <!-- Código del ticket (solo lectura) -->
-                @* <div class=""> *@
-                @*     <label>Código del ticket</label> *@
-                @*     <input type="text" class="form-control" placeholder="El código será generado automáticamente al crear el ticket." disabled /> *@
-                @* </div> *@
                 <div class="mb-3">
                     <label>Código del ticket</label>
                     <div class="input-group">
-                        <input asp-for="Ticket.codigo" id="codigoTicket" class="form-control" readonly />
+                        <input name="Ticket.codigo" id="codigoTicket" class="form-control" readonly />
                         <button type="button" class="btn btn-outline-primary" onclick="generarCodigo()">Generar Código</button>
                     </div>
                 </div>
 
-                <!-- Título del ticket -->
-                <div class="">
+                <div>
                     <label>Título del ticket</label>
-                    <input asp-for="Ticket.titulo" class="form-control" placeholder="Título del ticket" required />
+                    <input name="Ticket.titulo" class="form-control" placeholder="Título del ticket" required />
                 </div>
-                <!-- Descripción -->
-                <div class="">
+
+                <div>
                     <label>Descripción</label>
-                    <textarea asp-for="Ticket.descripcion" class="form-control" rows="4" placeholder="Ingrese una descripción del problema" required></textarea>
+                    <textarea name="Ticket.descripcion" class="form-control" rows="4" required></textarea>
                 </div>
+
                 <div class="mb-3">
-                    <label>Información de la persona que envía el ticket</label>
-                    <div class="border rounded p-3 bg-light" id="infoUsuario">
+                    <label>Información del usuario</label>
+                    <div class="border rounded p-3 bg-light">
                         <p><strong>Nombre:</strong> <span id="nombre_usuario">-</span></p>
                         <p><strong>Correo:</strong> <span id="correo_usuario">-</span></p>
                         <p><strong>Teléfono:</strong> <span id="telefono_usuario">-</span></p>
                     </div>
-                    <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#modalUsuarios">
-                        Seleccionar usuario
-                    </button>
+                    <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#modalUsuarios">Seleccionar usuario</button>
                 </div>
             </div>
+
             <div class="w-100">
-                <!-- Nombre de la Aplicación o Servicio -->
-                <div class="">
-                    <label>Nombre de la Aplicación o Servicio</label>
-                    <input asp-for="Ticket.servicio" class="form-control" placeholder="Aplicación afectada o nuevo servicio" required />
+                <div>
+                    <label>Nombre del Servicio</label>
+                    <input name="Ticket.servicio" class="form-control" required />
                 </div>
-                <!-- Categoría -->
-                <div class="">
+
+                <div>
                     <label>Categoría</label>
-                    <select asp-for="Ticket.id_categoria_ticket" class="form-control" required>
-                        <option value="">Seleccione la categoría</option>
+                    <select name="Ticket.id_categoria_ticket" class="form-control" required>
+                        <option value="">Seleccione una categoría</option>
                         @foreach (var cat in Model.Categorias)
                         {
                             <option value="@cat.id_categoria_ticket">@cat.nombre</option>
                         }
                     </select>
                 </div>
-                <!-- Prioridad -->
+
                 <div class="mb-4">
                     <label>Prioridad</label>
-                    <select asp-for="Ticket.prioridad" class="form-control" required>
+                    <select name="Ticket.prioridad" class="form-control" required>
                         <option value="">Seleccione la prioridad</option>
                         <option>Crítico</option>
                         <option>Importante</option>
@@ -74,30 +66,29 @@
                     </select>
                 </div>
 
-                <!--Guardar id del usuario-->
-                <input type="hidden" asp-for="Ticket.id_usuario" id="id_usuario" />
-                <!-- Archivos de respaldo -->
-                <div class="">
-                    <label>Archivos de respaldo</label>
-                    <input asp-for="Ticket.servicio" type="file" accept=".jpg,.jpeg,.png,.pdf" class="form-control" />
+                <input type="hidden" id="id_usuario" />
+
+                <div>
+                    <label>Archivo de respaldo (opcional)</label>
+                    <input type="file" accept=".jpg,.jpeg,.png,.pdf" class="form-control" />
                 </div>
+
                 <div class="mt-5 d-flex justify-content-center gap-3">
                     <a asp-action="Index" class="btn btn-outline-dark me-2 w-50">Cancelar</a>
                     <button type="submit" class="btn w-50 text-white" style="background-color: #8FD344">Crear Ticket</button>
                 </div>
             </div>
-            
         </div>
     </form>
 </div>
 
-<!-- Modal -->
+<!-- Modal de Usuarios -->
 <div class="modal fade" id="modalUsuarios" tabindex="-1" aria-labelledby="modalUsuariosLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalUsuariosLabel">Seleccionar Usuario</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <h5 class="modal-title">Seleccionar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <table class="table table-hover">
@@ -110,7 +101,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @* Reemplaza esto con tu lista de usuarios *@
                         @foreach (var user in ViewBag.Usuarios as List<FrontEndTicketPro.Models.UsuarioDTO>)
                         {
                             <tr>
@@ -141,29 +131,24 @@
         document.getElementById("nombre_usuario").innerText = nombre;
         document.getElementById("correo_usuario").innerText = correo;
         document.getElementById("telefono_usuario").innerText = telefono;
-
-        tipoUsuarioSeleccionado = tipoUsuario; // 'I' o 'E'
+        tipoUsuarioSeleccionado = tipoUsuario;
     }
 
-    function generarCodigo() {
+        function generarCodigo() {
         const prioridad = document.querySelector('[name="Ticket.prioridad"]').value;
+
         if (!tipoUsuarioSeleccionado) {
             alert("Por favor selecciona un usuario antes de generar el código.");
             return;
         }
 
-
         if (!prioridad) {
-            alert("Por favor selecciona una prioridad primero.");
+            alert("Por favor selecciona una prioridad.");
             return;
         }
 
         fetch(`https://localhost:7141/api/ticket/generar-codigo?prioridad=${prioridad}&tipoUsuario=${tipoUsuarioSeleccionado}`)
-                .then(async response => {
-                    if (!response.ok) throw new Error("Error HTTP " + response.status);
-                    return await response.json();
-                })
-
+            .then(response => response.json())
             .then(data => {
                 document.getElementById("codigoTicket").value = data.codigo;
             })
@@ -172,7 +157,50 @@
                 alert("Hubo un problema al generar el código.");
             });
     }
+
+
+        document.getElementById("formCrearTicket").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const ticket = {
+            id_ticket: 0,
+            codigo: document.getElementById("codigoTicket").value,
+            titulo: document.querySelector('[name="Ticket.titulo"]').value,
+            descripcion: document.querySelector('[name="Ticket.descripcion"]').value,
+            servicio: document.querySelector('[name="Ticket.servicio"]').value,
+            id_categoria_ticket: parseInt(document.querySelector('[name="Ticket.id_categoria_ticket"]').value),
+            prioridad: document.querySelector('[name="Ticket.prioridad"]').value,
+            id_usuario: parseInt(document.getElementById("id_usuario").value),
+            estado: "No asignado",
+            fecha_inicio: new Date(),
+            tareas: []
+        };
+
+        try {
+            const response = await fetch("https://localhost:7141/api/ticket", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(ticket)
+            });
+
+            if (!response.ok) {
+                const responseText = await response.text();
+                console.error("Error al guardar:", response.status, response.statusText);
+                console.log("Respuesta detallada:", responseText);
+                alert("Error al guardar el ticket:\n" + responseText);
+                return;
+            }
+
+            const data = await response.json();
+            alert("Ticket creado correctamente ✅");
+            window.location.href = "/Ticket/Index";
+
+        } catch (err) {
+            console.error("Error de red o fetch:", err);
+            alert("No se pudo conectar al servidor.");
+        }
+    });
+
 </script>
-
-
-

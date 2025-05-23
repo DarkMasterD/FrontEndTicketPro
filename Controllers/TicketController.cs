@@ -52,5 +52,60 @@ namespace FrontEndTicketPro.Controllers
             return View(modelo);
         }
 
+        // POST: Ticket/Create
+        [HttpPost]
+        public async Task<IActionResult> CrearTicket(CrearTicketViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                // Recargar categorías
+                var categorias = new List<categoria_ticket>();
+                var response = await _http.GetAsync("/api/categoria");
+                if (response.IsSuccessStatusCode)
+                {
+                    categorias = await response.Content.ReadFromJsonAsync<List<categoria_ticket>>();
+                }
+
+                // Recargar usuarios
+                var usuarios = new List<UsuarioDTO>();
+                var responseUsuarios = await _http.GetAsync("/api/usuario");
+                if (responseUsuarios.IsSuccessStatusCode)
+                {
+                    usuarios = await responseUsuarios.Content.ReadFromJsonAsync<List<UsuarioDTO>>();
+                }
+
+                // Restaurar las listas en el modelo
+                model.Categorias = categorias;
+                ViewBag.Usuarios = usuarios;
+
+                return View(model);
+            }
+
+            // Ticket listo para guardar
+            model.Ticket.fecha_inicio = DateTime.Now;
+            model.Ticket.estado = "No asignado";
+
+            var result = await _http.PostAsJsonAsync("api/ticket", model.Ticket);
+
+            if (result.IsSuccessStatusCode)
+            {
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                var errorMsg = await result.Content.ReadAsStringAsync();
+                ModelState.AddModelError("", $"No se pudo crear el ticket. Respuesta: {errorMsg}");
+
+                // Recargar listas si falla
+                model.Categorias = await _http.GetFromJsonAsync<List<categoria_ticket>>("/api/categoria");
+                ViewBag.Usuarios = await _http.GetFromJsonAsync<List<UsuarioDTO>>("/api/usuario");
+
+                return View(model);
+            }
+
+        }
+
+
+
     }
 }
