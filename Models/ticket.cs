@@ -38,5 +38,6 @@ namespace FrontEndTicketPro.Models
     {
         public int id_ticket { get; set; }
         public string estado { get; set; }
+        public bool cerrar_ticket { get; set; }
     }
 }

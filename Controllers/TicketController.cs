@@ -64,7 +64,8 @@ namespace FrontEndTicketPro.Controllers
             var data = new ticketEstadoUpdateModel
             {
                 id_ticket = id_ticket,
-                estado = "Resuelto" // o "Cerrado", según tu lógica de negocio
+                estado = "Resuelto",
+                cerrar_ticket = true 
             };
 
             var response = await _http.PostAsJsonAsync("api/ticket/actualizarTicket", data);
