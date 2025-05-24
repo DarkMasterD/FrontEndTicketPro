@@ -29,7 +29,7 @@ namespace FrontEndTicketPro.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ActualizarTicketEstado(int id_ticket, string estado)
+        public async Task<IActionResult> ActualizarTicketEstado(int id_ticket, string estado, string nombre_progreso, string descripcion_progreso)
         {
 
             if (id_ticket <= 0 || string.IsNullOrEmpty(estado))
@@ -38,7 +38,10 @@ namespace FrontEndTicketPro.Controllers
             var data = new ticketEstadoUpdateModel
             {
                 id_ticket = id_ticket,
-                estado = estado
+                estado = estado,
+                id_usuario_interno = 1, // Cambia esto por el ID del usuario interno que está actualizando el ticket(httpsession)
+                nombre_progreso = nombre_progreso,
+                descripcion_progreso = descripcion_progreso
             };
 
             var response = await _http.PostAsJsonAsync("api/ticket/actualizarTicket", data);

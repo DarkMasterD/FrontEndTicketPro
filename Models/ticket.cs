@@ -39,5 +39,9 @@ namespace FrontEndTicketPro.Models
         public int id_ticket { get; set; }
         public string estado { get; set; }
         public bool cerrar_ticket { get; set; }
+        // Campos para registrar progreso
+        public int? id_usuario_interno { get; set; } 
+        public string? nombre_progreso { get; set; }
+        public string? descripcion_progreso { get; set; }
     }
 }
