@@ -31,5 +31,17 @@ namespace FrontEndTicketPro.Controllers
 
             return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> DetalleTicket(int id)
+        {
+            Console.WriteLine($"ID recibido: {id}");
+            var ticket = await _http.GetFromJsonAsync<TicketDetalleViewModel>($"/api/ticket/detalle/{id}");
+            if (ticket == null)
+                return NotFound();
+
+            return View(ticket);
+        }
+
     }
 }

@@ -1,0 +1,225 @@
+﻿@model FrontEndTicketPro.Models.CrearTicketViewModel
+
+@{
+    ViewData["Title"] = "Crear Ticket - Administrador";
+}
+
+<div class="container bg-white p-3">
+    <h3 class="text-center">👨‍💻 Crear Nuevo Ticket</h3>
+
+    <form id="formCrearTicket" enctype="multipart/form-data">
+        <div class="d-flex justify-content-between">
+            <div class="w-100 me-5">
+                <div class="mb-3">
+                    <label>Código del ticket</label>
+                    <div class="input-group">
+                        <input name="Ticket.codigo" id="codigoTicket" class="form-control bg-white" readonly />
+                        <button type="button" class="btn btn-outline-primary" onclick="generarCodigo()">Generar Código</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label>Título del ticket</label>
+                    <input name="Ticket.titulo" class="form-control" placeholder="Título del ticket" required />
+                </div>
+
+                <div>
+                    <label>Descripción</label>
+                    <textarea name="Ticket.descripcion" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label>Información del usuario</label>
+                    <div class="border rounded p-3 bg-white">
+                        <p><strong>Nombre:</strong> <span id="nombre_usuario">-</span></p>
+                        <p><strong>Correo:</strong> <span id="correo_usuario">-</span></p>
+                        <p><strong>Teléfono:</strong> <span id="telefono_usuario">-</span></p>
+                    </div>
+                    <button type="button" class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#modalUsuarios">Seleccionar usuario</button>
+                </div>
+            </div>
+
+            <div class="w-100">
+                <div>
+                    <label>Nombre del Servicio</label>
+                    <input name="Ticket.servicio" class="form-control" required />
+                </div>
+
+                <div>
+                    <label>Categoría</label>
+                    <select name="Ticket.id_categoria_ticket" class="form-control" required>
+                        <option value="">Seleccione una categoría</option>
+                        @foreach (var cat in Model.Categorias)
+                        {
+                            <option value="@cat.id_categoria_ticket">@cat.nombre</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label>Prioridad</label>
+                    <select name="Ticket.prioridad" class="form-control" required>
+                        <option value="">Seleccione la prioridad</option>
+                        <option>Crítico</option>
+                        <option>Importante</option>
+                        <option>Baja</option>
+                    </select>
+                </div>
+
+                <input type="hidden" id="id_usuario" />
+
+                <div>
+                    <label>Archivo de respaldo (opcional)</label>
+                    <input type="file" accept=".jpg,.jpeg,.png,.pdf" class="form-control" />
+                </div>
+
+                <div class="mt-5 d-flex justify-content-center gap-3">
+                    <a asp-action="Index" class="btn btn-outline-dark me-2 w-50">Cancelar</a>
+                    <button type="submit" class="btn w-50 text-white" style="background-color: #8FD344">Crear Ticket</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Modal de Usuarios -->
+<div class="modal fade" id="modalUsuarios" tabindex="-1" aria-labelledby="modalUsuariosLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Seleccionar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Teléfono</th>
+                            <th>Seleccionar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in ViewBag.Usuarios as List<FrontEndTicketPro.Models.UsuarioDTO>)
+                        {
+                            <tr>
+                                <td>@user.nombre_usuario</td>
+                                <td>@user.email</td>
+                                <td>@user.telefono</td>
+                                <td>
+                                    <button type="button" class="btn btn-success btn-sm"
+                                            onclick="seleccionarUsuario(@user.id_usuario, '@user.nombre_usuario', '@user.email', '@user.telefono', '@user.tipo_usuario')"
+                                            data-bs-dismiss="modal">
+                                        Seleccionar
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let tipoUsuarioSeleccionado = null;
+
+    function seleccionarUsuario(id, nombre, correo, telefono, tipoUsuario) {
+        document.getElementById("id_usuario").value = id;
+        document.getElementById("nombre_usuario").innerText = nombre;
+        document.getElementById("correo_usuario").innerText = correo;
+        document.getElementById("telefono_usuario").innerText = telefono;
+        tipoUsuarioSeleccionado = tipoUsuario;
+    }
+
+        function generarCodigo() {
+        const prioridad = document.querySelector('[name="Ticket.prioridad"]').value;
+
+        if (!tipoUsuarioSeleccionado) {
+            alert("Por favor selecciona un usuario antes de generar el código.");
+            return;
+        }
+
+        if (!prioridad) {
+            alert("Por favor selecciona una prioridad.");
+            return;
+        }
+
+        fetch(`https://localhost:7141/api/ticket/generar-codigo?prioridad=${prioridad}&tipoUsuario=${tipoUsuarioSeleccionado}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("codigoTicket").value = data.codigo;
+            })
+            .catch(error => {
+                console.error("Error generando código:", error);
+                alert("Hubo un problema al generar el código.");
+            });
+    }
+
+
+        document.getElementById("formCrearTicket").addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const ticket = {
+            id_ticket: 0,
+            codigo: document.getElementById("codigoTicket").value,
+            titulo: document.querySelector('[name="Ticket.titulo"]').value,
+            descripcion: document.querySelector('[name="Ticket.descripcion"]').value,
+            servicio: document.querySelector('[name="Ticket.servicio"]').value,
+            id_categoria_ticket: parseInt(document.querySelector('[name="Ticket.id_categoria_ticket"]').value),
+            prioridad: document.querySelector('[name="Ticket.prioridad"]').value,
+            id_usuario: parseInt(document.getElementById("id_usuario").value),
+            estado: "No asignado",
+            fecha_inicio: new Date(),
+            tareas: []
+        };
+
+        try {
+            const response = await fetch("https://localhost:7141/api/ticket", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(ticket)
+            });
+
+            if (!response.ok) {
+                const responseText = await response.text();
+                console.error("Error al guardar:", response.status, response.statusText);
+                console.log("Respuesta detallada:", responseText);
+                alert("Error al guardar el ticket:\n" + responseText);
+                return;
+            }
+
+            const data = await response.json();
+            //Agregar archivo por ticket
+                const archivoInput = document.querySelector('input[type="file"]');
+                const archivo = archivoInput.files[0];
+
+                if (archivo) {
+                    const formData = new FormData();
+                    formData.append("archivo", archivo);
+                    formData.append("id_ticket", data.id); //el id retornado al crear ticket
+
+                    await fetch("https://localhost:7141/api/ticket/subir-archivo", {
+                        method: "POST",
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(r => console.log("Archivo subido", r))
+                    .catch(err => console.error("Error subiendo archivo", err));
+                }
+
+            //=============
+            alert("Ticket creado correctamente ✅");
+            window.location.href = "/Ticket/Index";
+
+        } catch (err) {
+            console.error("Error de red o fetch:", err);
+            alert("No se pudo conectar al servidor.");
+        }
+    });
+
+</script>
