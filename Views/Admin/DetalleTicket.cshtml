@@ -1,0 +1,81 @@
+﻿@model FrontEndTicketPro.Models.Admin.TicketDetalleViewModel
+@{
+    ViewData["Title"] = "Detalle de Ticket - Administrador";
+}
+
+<div class="container bg-white p-3">
+    <h3 class="text-center fw-bold mb-4">📋 Detalle del ticket</h3>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <label class="fw-bold">Título:</label>
+            <input class="form-control bg-white" value="@Model.Titulo" readonly />
+
+            <label class="fw-bold mt-3">Aplicación o servicio:</label>
+            <input class="form-control bg-white" value="@Model.Servicio" readonly />
+
+            <label class="fw-bold mt-3">Descripción:</label>
+            <textarea class="form-control bg-white" rows="4" readonly>@Model.Descripcion</textarea>
+
+            <div class="mt-2 d-flex justify-content-between">
+                <label class="fw-bold">Cliente afectado:</label><br />
+                <div>
+                    <label class="fw-bold me-1">Archivos adjuntos:</label>
+
+                    @if (!string.IsNullOrEmpty(Model.ArchivoUrl))
+                    {
+                        <a href="@Model.ArchivoUrl" target="_blank">click aquí</a>
+                    }
+                    else
+                    {
+                        <span class="text-muted">No adjuntos</span>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-1 border rounded p-3 bg-white">
+                @* <label class="fw-bold">Cliente afectado:</label><br /> *@
+                <span>Nombre: @Model.ClienteNombre</span><br />
+                <span>Correo: @Model.ClienteCorreo</span><br />
+                <span>Teléfono: @Model.ClienteTelefono</span>
+            </div>
+
+            
+        </div>
+
+        <div class="col-md-6 d-flex flex-column justify-content-between">
+            <div>
+                <label class="fw-bold">Ticket:</label>
+                <input class="form-control bg-white" value="@Model.Codigo" readonly />
+
+                <label class="fw-bold mt-3">Categoría:</label>
+                <input class="form-control bg-white" value="@Model.Categoria" readonly />
+
+                <label class="fw-bold mt-3">Prioridad:</label>
+                @{
+                    string prioridadClase = Model.Prioridad switch
+                    {
+                        "Importante" => "border-primary text-primary",
+                        "Baja" => "border-warning text-warning",
+                        "Crítico" => "border-danger text-danger",
+                        _ => "border-secondary text-dark"
+                    };
+                }
+                <input class="form-control fw-bold bg-white @prioridadClase" value="@Model.Prioridad" readonly />
+
+                @* <input class="form-control border-danger text-danger fw-bold bg-white" value="@Model.Prioridad" readonly /> *@
+
+                <div class="d-grid mt-4">
+                    <a asp-action="AsignarTarea" asp-route-id="@Model.IdTicket" class="btn text-white" style="background-color: #387089">Asignar Tarea</a>
+                </div>
+            </div>
+
+            <!-- Botones al fondo -->
+            <div class="d-flex justify-content-center gap-3 mt-5">
+                <a asp-action="Actualizar" asp-route-id="@Model.IdTicket" class="btn w-50 text-white" style="background-color: #0A2239">Actualizar Ticket</a>
+                <a asp-action="Cerrar" asp-route-id="@Model.IdTicket" class="btn w-50 text-white" style="background-color: #8FD344">Cerrar Ticket</a>
+            </div>
+        </div>
+
+    </div>
+</div>

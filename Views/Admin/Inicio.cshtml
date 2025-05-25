@@ -105,7 +105,12 @@
                             <td>@t.Fecha.ToString("MM/dd/yy")</td>
                             <td>
                                 <a class="btn btn-sm text-light" style="background: #8FD344;">Asignar</a>
-                                <a class="btn btn-info btn-sm text-white" style="background: #3498DB">Ver</a>
+                                @* <a class="btn btn-info btn-sm text-white" style="background: #3498DB">Ver</a> *@
+                                <a asp-controller="Admin" asp-action="DetalleTicket" asp-route-id="@t.IdTicket"
+                                   class="btn btn-info btn-sm text-white" style="background: #3498DB">
+                                    Ver
+                                </a>
+
                             </td>
                         </tr>
                     }

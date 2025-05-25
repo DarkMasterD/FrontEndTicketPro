@@ -4,7 +4,7 @@
     ViewData["Title"] = "Crear Ticket - Administrador";
 }
 
-<div class="container">
+<div class="container bg-white p-3">
     <h3 class="text-center">👨‍💻 Crear Nuevo Ticket</h3>
 
     <form id="formCrearTicket" enctype="multipart/form-data">
@@ -13,7 +13,7 @@
                 <div class="mb-3">
                     <label>Código del ticket</label>
                     <div class="input-group">
-                        <input name="Ticket.codigo" id="codigoTicket" class="form-control" readonly />
+                        <input name="Ticket.codigo" id="codigoTicket" class="form-control bg-white" readonly />
                         <button type="button" class="btn btn-outline-primary" onclick="generarCodigo()">Generar Código</button>
                     </div>
                 </div>
@@ -30,7 +30,7 @@
 
                 <div class="mb-3">
                     <label>Información del usuario</label>
-                    <div class="border rounded p-3 bg-light">
+                    <div class="border rounded p-3 bg-white">
                         <p><strong>Nombre:</strong> <span id="nombre_usuario">-</span></p>
                         <p><strong>Correo:</strong> <span id="correo_usuario">-</span></p>
                         <p><strong>Teléfono:</strong> <span id="telefono_usuario">-</span></p>
