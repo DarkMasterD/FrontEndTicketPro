@@ -44,4 +44,22 @@ namespace FrontEndTicketPro.Models
         public string? nombre_progreso { get; set; }
         public string? descripcion_progreso { get; set; }
     }
+
+    public class TareaTicketItem
+    {
+        public string Nombre { get; set; }
+        public string Estado { get; set; }
+        public DateTime FechaInicio { get; set; }
+        public DateTime? FechaFin { get; set; }  // Puede ser null
+        public string UsuarioAsignado { get; set; } // Nombre completo del usuario
+    }
+
+    public class tareaTicketViewModel
+    {
+        public int IdTicket { get; set; }
+        public string Codigo { get; set; }
+        public string Titulo { get; set; }
+        public string Descripcion { get; set; }
+        public List<TareaTicketItem> Tareas { get; set; }
+    }
 }
