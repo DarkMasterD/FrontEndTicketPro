@@ -84,5 +84,12 @@ namespace FrontEndTicketPro.Controllers
                 return RedirectToAction("IndexDetalleTicket", new { id_ticket = id_ticket });
             }
         }
+
+        public async Task<IActionResult> IndexTareasTicket(int id_ticket)
+        {
+            var datosTareaTicket = await _http.GetFromJsonAsync<tareaTicketViewModel>($"api/ticket/VerTareasDelTicket?idTicket={id_ticket}");
+            ViewBag.id_ticket = id_ticket; // Guardar el id_ticket en ViewBag para usarlo en la vista
+            return View(datosTareaTicket);
+        }
     }
 }
