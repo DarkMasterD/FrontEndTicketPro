@@ -219,6 +219,7 @@
             if (!response.ok) throw new Error("No se pudo cerrar el ticket");
 
             alert("Ticket cerrado correctamente");
+            window.location.href = "/Admin/Inicio";
 
         } catch (error) {
             console.error(error);
