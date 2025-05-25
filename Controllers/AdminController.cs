@@ -15,11 +15,10 @@ namespace FrontEndTicketPro.Controllers
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;
         }
-
+        [SessionAuthorize("admin")]
         public async Task<IActionResult> Inicio()
         {
             // Simulación para pruebas
-            HttpContext.Session.SetString("Rol", "admin");
 
             var client = _httpClientFactory.CreateClient("ApiInsegura");
             var apiBaseUrl = _configuration["ApiBaseUrl"];

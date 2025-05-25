@@ -1,35 +1,31 @@
-using FrontEndTicketPro.Models;
+﻿using FrontEndTicketPro.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace FrontEndTicketPro.Controllers
+[SessionAuthorize] // ✅ Aplica la protección a todo el controlador
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    private readonly ILogger<HomeController> _logger;
+
+    public HomeController(ILogger<HomeController> logger)
     {
-        private readonly ILogger<HomeController> _logger;
+        _logger = logger;
+    }
 
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+    public IActionResult Index()
+    {
+        // ❌ Ya no se fuerza la sesión como "admin"
+        return View();
+    }
 
-        public IActionResult Index()
-        {
-            HttpContext.Session.SetString("Rol", "admin");
+    public IActionResult Privacy()
+    {
+        return View();
+    }
 
-            ViewBag.Rol = "cliente"; // o "tecnico", "admin"
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult Error()
+    {
+        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }
