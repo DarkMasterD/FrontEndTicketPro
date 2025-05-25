@@ -19,7 +19,19 @@ namespace FrontEndTicketPro.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index() => View();
+        public IActionResult Index()
+        {
+            var rol = HttpContext.Session.GetString("Rol");
+
+            if (!string.IsNullOrEmpty(rol))
+            {
+                if (rol == "admin") return RedirectToAction("Inicio", "Admin");
+                if (rol == "tecnico") return RedirectToAction("Inicio", "Tecnico");
+                if (rol == "cliente") return RedirectToAction("Inicio", "Cliente");
+            }
+
+            return View();
+        }
 
         [HttpPost]
         public async Task<IActionResult> Index(string usuario, string contrasenia)
@@ -41,10 +53,7 @@ namespace FrontEndTicketPro.Controllers
                 var tipoUsuario = data.GetProperty("tipo").GetString();
                 var idUsuario = data.GetProperty("id").GetInt32();
 
-                HttpContext.Session.SetInt32("id_usuario", idUsuario);
-                HttpContext.Session.SetString("tipo_usuario", tipoUsuario);
-
-                string rolFinal = "Cliente";
+                string rolFinal = "cliente";
 
                 if (tipoUsuario == "I")
                 {
@@ -52,15 +61,23 @@ namespace FrontEndTicketPro.Controllers
                     if (rolResponse.IsSuccessStatusCode)
                     {
                         var rolJson = await rolResponse.Content.ReadAsStringAsync();
-                        rolFinal = rolJson.Replace("\"", "");
+                        rolFinal = rolJson.Replace("\"", "").ToLower();
+
+                        if (rolFinal == "administrador")
+                            rolFinal = "admin";
+                        else if (rolFinal == "técnico" || rolFinal == "tecnico") // <- con o sin tilde
+                            rolFinal = "tecnico";
                     }
                 }
 
-                HttpContext.Session.SetString("rol_usuario", rolFinal);
+
+                HttpContext.Session.SetInt32("id_usuario", idUsuario);
+                HttpContext.Session.SetString("tipo_usuario", tipoUsuario);
+                HttpContext.Session.SetString("Rol", rolFinal);
 
                 if (tipoUsuario == "E")
                     return RedirectToAction("Inicio", "Cliente");
-                else if (rolFinal == "Administrador")
+                else if (rolFinal == "administrador")
                     return RedirectToAction("Inicio", "Admin");
                 else
                     return RedirectToAction("Inicio", "Tecnico");
@@ -68,6 +85,13 @@ namespace FrontEndTicketPro.Controllers
 
             ViewBag.Error = "Credenciales incorrectas.";
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult CerrarSesion()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Login");
         }
     }
 }
