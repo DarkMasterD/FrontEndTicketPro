@@ -10,7 +10,7 @@
         public string Categoria { get; set; }
         public string Prioridad { get; set; }
         public string Estado { get; set; }
-        public string ArchivoUrl { get; set; }
+        public string UrlArchivo { get; set; }
 
         public string ClienteNombre { get; set; }
         public string ClienteCorreo { get; set; }
