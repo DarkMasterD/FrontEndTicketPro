@@ -1,0 +1,225 @@
+﻿@model List<FrontEndTicketPro.Models.ticketDetalleDTO>
+
+@{
+    var ticket = Model.FirstOrDefault();
+
+    var prioridades = new List<SelectListItem> {
+        new SelectListItem { Value = "Crítico", Text = "Crítico" },
+        new SelectListItem { Value = "Importante", Text = "Importante" },
+        new SelectListItem { Value = "Baja", Text = "Baja" }
+    };
+
+    var estados = new List<SelectListItem> {
+        new SelectListItem { Value = "En Progreso", Text = "En Progreso" },
+        new SelectListItem { Value = "No asignado", Text = "No asignado" },
+        new SelectListItem { Value = "Resuelto", Text = "Resuelto" },
+        new SelectListItem { Value = "En espera de información del cliente", Text = "En espera de información del cliente" }
+    };
+}
+
+@if (ticket == null)
+{
+    <div>No hay datos para mostrar.</div>
+}
+else
+{
+    <style>
+        label {
+            font-size: 17px;
+        }
+
+        input.estado-en-progreso {
+            background-color: #0d6efd !important;
+            color: white !important;
+        }
+
+        input.estado-no-asignado {
+            background-color: #ffc107 !important;
+            color: black !important;
+        }
+
+        input.estado-resuelto {
+            background-color: #198754 !important;
+            color: white !important;
+        }
+
+        input.estado-en-espera {
+            background-color: #6c757d !important;
+            color: white !important;
+        }
+
+        input.prioridad-critico {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+
+        input.prioridad-importante {
+            background-color: #fd7e14 !important;
+            color: white !important;
+        }
+
+        input.prioridad-baja {
+            background-color: #198754 !important;
+            color: white !important;
+        }
+    </style>
+
+    <div class="container mt-4">
+        <div class="h4 mb-4 justify-content-center text-center">Detalle del ticket</div>
+
+        <div class="d-flex gap-5">
+            <div class="col-6">
+                <div class="mb-3">
+                    <label class="form-label"><strong>Título:</strong></label>
+                    <input type="text" class="form-control" value="@ticket.Titulo" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Aplicación o servicio:</strong></label>
+                    <input type="text" class="form-control" value="@ticket.Servicio" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label"><strong>Descripción:</strong></label>
+                    <textarea class="form-control" rows="3" readonly>@ticket.Descripcion</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label class="form-label mb-0"><strong>Cliente afectado:</strong></label>
+                        <div class="d-flex align-items-center gap-2">
+                            <label class="form-label mb-0"><strong>Archivos adjuntos:</strong></label>
+                            <a href="#">Click aquí</a>
+                        </div>
+                    </div>
+                    <textarea class="form-control" rows="3" style="white-space: pre-wrap; font-size:large" readonly>
+@ticket.Cliente_Afectado
+@ticket.Correo
+@ticket.Telefono
+                    </textarea>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="mb-3">
+                    <label class="form-label"><strong>Ticket:</strong></label>
+                    <input type="text" class="form-control" value="@ticket.Codigo" readonly />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label"><strong>Categoria:</strong></label>
+                    <input type="text" class="form-control" value="@ticket.Categoria_Ticket" readonly />
+                </div>
+
+                <div class="mb-3">
+                    <label><strong>Prioridad:</strong></label>
+                    <input type="text" class="form-control" id="prioridad" value="@ticket.Prioridad.Trim()" readonly />
+                </div>
+
+                <div class="d-flex justify-content-between align-items-end gap-4">
+                    <div class="d-flex align-items-center gap-2 w-75">
+                        <label for="estado" class="form-label mb-0"><strong>Estado:</strong></label>
+                        <input type="text" class="form-control" id="estado" value="@ticket.Estado.Trim()" style="width: 170px;" readonly />
+                    </div>
+                    <button class="btn btn-secondary py-0 px-3" style="height: 38px;">Ver tareas</button>
+                </div>
+
+                <div class="d-flex justify-content-between" style="margin-top: 85px">
+                    <button class="btn btn-secondary col-5" data-bs-toggle="modal" data-bs-target="#ModalEstadoTicket" onclick="abrirModalEstado(@ticket.id_ticket)">Actualizar Ticket</button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="ModalEstadoTicket" tabindex="-1" aria-labelledby="ModalEstadoTicketLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <form asp-action="ActualizarTicketEstado" method="post">
+                                    <input type="hidden" name="id_ticket" value="@ViewBag.id_ticket"></input>
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="ModalEstadoTicketLabel">Cambiar estado del ticket</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <input type="hidden" name="id_ticket" id="id_ticket_modal" value="@ticket.id_ticket" />
+
+                                        <div class="mb-3">
+                                            <label for="estadoModalSelect" class="form-label">Estado</label>
+                                            @Html.DropDownList("estado", new SelectList(estados, "Value", "Text", ticket.Estado), new { @class = "form-select", id = "estadoModalSelect", required = "required" })
+                                        </div>
+
+                                        <!-- Botón de notificación -->
+                                        <div class="mb-3">
+                                            <label class="form-label d-block">Enviar notificación al cliente para solicitar más información</label>
+                                            <button class="btn btn-primary w-100">
+                                                <i class="bi bi-envelope-fill me-2"></i> Enviar
+                                            </button>
+                                        </div>
+
+                                        <!-- Comentario de progreso -->
+                                        <div class="mb-3">
+                                            <label>Titulo del progreso:</label>
+                                            <input type="text" id="nombre_progreso" name="nombre_progreso" class="form-control">
+                                            <label for="comentarioProgreso" class="form-label">Agregar progreso</label>
+                                            <textarea id="comentarioProgreso" name="descripcion_progreso" class="form-control" rows="3" placeholder="Ingrese el comentario" @* required *@></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" style="background-color:white; color:limegreen; border:none" data-bs-dismiss="modal">Cerrar</button>
+                                        <button type="submit" class="btn btn-success">Guardar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="CerrarTicket" method="post">
+                        <input type="hidden" name="id_ticket" value="@ViewBag.id_ticket" />
+                        <button type="submit" class="btn btn-success">Cerrar Ticket</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    function aplicarColorEstado(element) {
+        if (!element) return;
+        element.classList.remove("estado-en-progreso", "estado-no-asignado", "estado-resuelto", "estado-en-espera");
+        switch (element.value.trim()) {
+            case "En Progreso":
+                element.classList.add("estado-en-progreso"); break;
+            case "No asignado":
+                element.classList.add("estado-no-asignado"); break;
+            case "Resuelto":
+                element.classList.add("estado-resuelto"); break;
+            case "En espera de información del cliente":
+                element.classList.add("estado-en-espera"); break;
+        }
+    }
+
+    function aplicarColorPrioridad(element) {
+        if (!element) return;
+        element.classList.remove("prioridad-critico", "prioridad-importante", "prioridad-baja");
+        switch (element.value.trim()) {
+            case "Crítico":
+                element.classList.add("prioridad-critico"); break;
+            case "Importante":
+                element.classList.add("prioridad-importante"); break;
+            case "Baja":
+                element.classList.add("prioridad-baja"); break;
+        }
+    }
+
+    function abrirModalEstado(idTicketActual) {
+        document.getElementById("id_ticket_modal").value = idTicketActual;
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const estadoInput = document.getElementById("estado");
+        const prioridadInput = document.getElementById("prioridad");
+
+        aplicarColorEstado(estadoInput);
+        aplicarColorPrioridad(prioridadInput);
+    });
+</script>
