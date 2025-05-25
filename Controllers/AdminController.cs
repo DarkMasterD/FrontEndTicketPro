@@ -2,32 +2,34 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http;
 using System.Net.Http.Json;
-using static System.Net.WebRequestMethods;
 
 namespace FrontEndTicketPro.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly HttpClient _http;
-        public AdminController(IHttpClientFactory httpClientFactory)
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IConfiguration _configuration;
+
+        public AdminController(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
-            _http = httpClientFactory.CreateClient();
-            _http.BaseAddress = new Uri("https://localhost:7141"); // Usa el puerto real de tu API
+            _httpClientFactory = httpClientFactory;
+            _configuration = configuration;
         }
+        [SessionAuthorize("admin")]
         public async Task<IActionResult> Inicio()
         {
             // Simulación para pruebas
-            HttpContext.Session.SetString("Rol", "admin");
 
-            var resumen = await _http.GetFromJsonAsync<DashboardResumen>("api/ticket/resumen-dashboard");
-            var tickets = await _http.GetFromJsonAsync<List<TablaTicketsInicio>>("api/ticket/resumen-tickets");
+            var client = _httpClientFactory.CreateClient("ApiInsegura");
+            var apiBaseUrl = _configuration["ApiBaseUrl"];
+
+            var resumen = await client.GetFromJsonAsync<DashboardResumen>($"{apiBaseUrl}/ticket/resumen-dashboard");
+            var tickets = await client.GetFromJsonAsync<List<TablaTicketsInicio>>($"{apiBaseUrl}/ticket/resumen-tickets");
 
             ViewBag.Resumen = resumen;
             ViewBag.Tickets = tickets;
 
             return View();
         }
-
-
     }
 }
