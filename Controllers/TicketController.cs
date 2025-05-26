@@ -107,7 +107,7 @@ namespace FrontEndTicketPro.Controllers
 
         public async Task<IActionResult> IndexDetalleTicket(int id_ticket)
         {
-            //SE TIENE QUE RECUPERAR EL ID DEL TICKET DE LA PANTALLA ANTERIOR
+            
             var datosDetalleTicket = await _http.GetFromJsonAsync<List<ticketDetalleDTO>>($"api/ticket/ListarDetalle?idTicket={id_ticket}");
             ViewBag.id_ticket = id_ticket; // Guardar el id_ticket en ViewBag para usarlo en la vista
             return View(datosDetalleTicket);
