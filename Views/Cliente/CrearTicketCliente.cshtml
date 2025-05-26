@@ -1,0 +1,106 @@
+﻿@model FrontEndTicketPro.Models.CrearTicketViewModel
+@{
+    ViewData["Title"] = "Crear Ticket - Cliente";
+}
+
+<div class="container bg-white p-4 rounded mt-4 mb-4 shadow-sm">
+    <h3 class="text-center mb-4">👨‍💻 Crear Nuevo Ticket</h3>
+
+    @if (ViewBag.DebugSession != null)
+    {
+        <div class="alert alert-info">@ViewBag.DebugSession</div>
+    }
+
+    <form id="formCrearTicket">
+        <input type="hidden" id="id_usuario" value="@ViewBag.IdUsuario" />
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label>Código del ticket</label>
+                    <div class="input-group">
+                        <input id="codigoTicket" class="form-control bg-white" readonly />
+                        <button type="button" class="btn btn-outline-primary" onclick="generarCodigo()">Generar Código</button>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label>Título del ticket</label>
+                    <input id="titulo" class="form-control" placeholder="Título del ticket" required />
+                </div>
+
+                <div class="mb-3">
+                    <label>Descripción</label>
+                    <textarea id="descripcion" class="form-control" rows="4" placeholder="Describa el problema" required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label>Información del cliente</label>
+                    <div class="border rounded p-3 bg-light">
+                        <p><strong>Nombre:</strong> @ViewBag.Nombre</p>
+                        <p><strong>Correo:</strong> @ViewBag.Correo</p>
+                        <p><strong>Teléfono:</strong> @ViewBag.Telefono</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label>Nombre del Servicio</label>
+                    <input id="servicio" class="form-control" placeholder="Aplicación o sistema afectado" required />
+                </div>
+
+                <div class="mb-3">
+                    <label>Categoría</label>
+                    <select id="categoria" class="form-control" required>
+                        <option value="">Seleccione una categoría</option>
+                        @foreach (var cat in Model.Categorias)
+                        {
+                            <option value="@cat.id_categoria_ticket">@cat.nombre</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label>Prioridad</label>
+                    <select id="prioridad" class="form-control" required>
+                        <option value="">Seleccione la prioridad</option>
+                        <option>Crítico</option>
+                        <option>Importante</option>
+                        <option>Baja</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label>Archivo de respaldo</label><br />
+                    <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalArchivo">Subir archivo</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a asp-controller="Cliente" asp-action="Inicio" class="btn btn-outline-dark me-3">Cancelar</a>
+            <button type="submit" class="btn text-white" style="background-color: #8FD344">Crear Ticket</button>
+        </div>
+    </form>
+</div>
+
+<!-- Modal para archivo -->
+<div class="modal fade" id="modalArchivo" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content p-3">
+            <h5>Subir archivo solicitado</h5>
+            <input type="file" id="archivoInput" class="form-control mb-2" accept=".jpg,.jpeg,.png,.pdf" />
+            <label>Comentario:</label>
+            <textarea id="comentarioArchivo" class="form-control mb-3" placeholder="Ingrese un comentario adicional"></textarea>
+            <div class="text-end">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="guardarArchivo()">Subir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/crearTicketCliente.js"></script>
+}

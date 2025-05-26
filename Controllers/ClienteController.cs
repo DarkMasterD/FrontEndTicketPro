@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using static FrontEndTicketPro.Models.Cliente.ClienteInicio;
+using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
-using FrontEndTicketPro.Models.Cliente;
 using System.Text;
+using System.Net.Http.Json;
+using FrontEndTicketPro.Models;
+using FrontEndTicketPro.Models.Cliente;
+using static FrontEndTicketPro.Models.Cliente.ClienteInicio;
 
 namespace FrontEndTicketPro.Controllers
 {
     public class ClienteController : Controller
     {
-
-
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IConfiguration _configuration;
 
@@ -64,34 +64,91 @@ namespace FrontEndTicketPro.Controllers
             return View(viewModel);
         }
 
-        /* [SessionAuthorize("cliente")]
-         public async Task<IActionResult> MiInfo()
-         {
-             var idUsuario = HttpContext.Session.GetInt32("id_usuario");
-             if (idUsuario == null) return RedirectToAction("Index", "Login");
+        [SessionAuthorize("cliente")]
+        public async Task<IActionResult> CrearTicketCliente()
+        {
+            var _http = _httpClientFactory.CreateClient();
+            _http.BaseAddress = new Uri("https://localhost:7141");
 
-             var client = _httpClientFactory.CreateClient("ApiInsegura");
-             string apiUrl = _configuration["ApiBaseUrl"] + $"/cliente/info/{idUsuario}";
+            int? id_usuario = HttpContext.Session.GetInt32("id_usuario");
+            if (id_usuario == null)
+            {
+                TempData["Error"] = "No se ha iniciado sesión correctamente.";
+                return RedirectToAction("Inicio");
+            }
 
-             var response = await client.GetAsync(apiUrl);
-             if (!response.IsSuccessStatusCode) return View(new MiInfo()); // opcional: mostrar error
+            var responseUsuario = await _http.GetAsync($"/api/usuario/{id_usuario.Value}");
+            if (!responseUsuario.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "No se pudieron obtener los datos del usuario.";
+                return RedirectToAction("Inicio");
+            }
 
-             var json = await response.Content.ReadAsStringAsync();
-             var data = JsonSerializer.Deserialize<JsonElement>(json);
+            var usuario = await responseUsuario.Content.ReadFromJsonAsync<UsuarioDTO>();
+            var categorias = await _http.GetFromJsonAsync<List<categoria_ticket>>("/api/categoria");
 
-             var model = new MiInfo
-             {
-                 NombreUsuario = data.GetProperty("nombre_usuario").GetString(),
-                 Email = data.GetProperty("email").GetString(),
-                 FechaRegistro = data.GetProperty("fecha_registro").GetString(),
-                 Nombre = data.GetProperty("nombre").GetString(),
-                 Apellido = data.GetProperty("apellido").GetString(),
-                 Empresa = data.GetProperty("empresa").GetString()
-             };
+            ViewBag.IdUsuario = usuario.id_usuario;
+            ViewBag.Nombre = usuario.nombre_usuario;
+            ViewBag.Correo = usuario.email;
+            ViewBag.Telefono = usuario.telefono;
 
-             return View(model);
-         } 
-        */
+            var model = new CrearTicketViewModel
+            {
+                Ticket = new ticket(),
+                Categorias = categorias
+            };
+
+            return View(model);
+        }
+
+        [SessionAuthorize("cliente")]
+        public async Task<IActionResult> MisTickets()
+        {
+            var http = _httpClientFactory.CreateClient();
+            http.BaseAddress = new Uri("https://localhost:7141");
+
+            int? idUsuario = HttpContext.Session.GetInt32("id_usuario");
+            if (idUsuario == null)
+            {
+                TempData["Error"] = "No se ha iniciado sesión correctamente.";
+                return RedirectToAction("Inicio");
+            }
+
+            var response = await http.GetAsync($"/api/ticket/tickets-cliente/{idUsuario.Value}");
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "No se pudieron obtener los tickets.";
+                return RedirectToAction("Inicio");
+            }
+
+            var tickets = await response.Content.ReadFromJsonAsync<List<TicketClienteDTO>>();
+            return View(tickets);
+        }
+
+        [SessionAuthorize("cliente")]
+        public async Task<IActionResult> DetalleTicket(int id)
+        {
+            var http = _httpClientFactory.CreateClient();
+            http.BaseAddress = new Uri("https://localhost:7141");
+
+            var response = await http.GetAsync($"/api/ticket/detalle/{id}");
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "No se pudo obtener el detalle del ticket.";
+                return RedirectToAction("MisTickets");
+            }
+
+            var detalle = await response.Content.ReadFromJsonAsync<TicketDetalleViewModel>();
+
+            var respProgreso = await http.GetAsync($"/api/ticket/progreso/{id}");
+            if (respProgreso.IsSuccessStatusCode)
+            {
+                var lista = await respProgreso.Content.ReadFromJsonAsync<List<ProgresoDTO>>();
+                detalle.Progresos = lista;
+            }
+
+            return View(detalle);
+        }
 
         [SessionAuthorize("cliente")]
         public async Task<IActionResult> MiInfo()
@@ -132,14 +189,12 @@ namespace FrontEndTicketPro.Controllers
                 }
 
                 return View(model);
-
             }
             catch (Exception ex)
             {
                 TempData["Error"] = "Error interno: " + ex.Message;
                 return RedirectToAction("Inicio");
             }
-
         }
 
         [HttpPost]
@@ -162,15 +217,10 @@ namespace FrontEndTicketPro.Controllers
                 TempData["Exito"] = "¡Datos actualizados correctamente!";
                 return RedirectToAction("MiInfo");
             }
-            else
-            {             // puedes mostrar un mensaje si falla
-                ViewBag.Error = "No se pudo guardar.";
-                return View("MiInfo", model);
-            }
 
-
+            ViewBag.Error = "No se pudo guardar.";
+            return View("MiInfo", model);
         }
-
 
         [HttpPost]
         [SessionAuthorize("cliente")]
@@ -237,6 +287,6 @@ namespace FrontEndTicketPro.Controllers
 
             return RedirectToAction("MiInfo");
         }
-
     }
 }
+

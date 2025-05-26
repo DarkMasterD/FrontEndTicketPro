@@ -1,0 +1,62 @@
+﻿@model List<FrontEndTicketPro.Models.TicketClienteDTO>
+@{
+    ViewData["Title"] = "Mis Tickets - Cliente";
+}
+
+<div class="container mt-4 bg-white p-4 rounded shadow-sm">
+    <h3 class="fw-bold mb-4">📋 Mis Tickets</h3>
+
+    <div class="d-flex justify-content-between mb-3">
+        <div class="input-group w-75">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" id="busqueda" class="form-control" placeholder="Buscar por título, categoría, estado o prioridad" onkeyup="filtrarTabla()" />
+        </div>
+    </div>
+
+    <table class="table table-hover" id="tablaTickets">
+        <thead>
+            <tr>
+                <th>Título del ticket</th>
+                <th>Estado</th>
+                <th>Categoría</th>
+                <th>Prioridad</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ticket in Model)
+            {
+                <tr>
+                    <td>@ticket.titulo</td>
+                    <td>
+                        <span class="badge bg-@ticket.GetEstadoColor()">@ticket.estado</span>
+                    </td>
+                    <td>@ticket.categoria</td>
+                    <td>
+                        <span class="badge bg-@ticket.GetPrioridadColor()">@ticket.prioridad</span>
+                    </td>
+                    <td>
+                        @ticket.fecha_inicio.ToString("M/d/yy")
+                        <a asp-action="DetalleTicket" asp-controller="Cliente" asp-route-id="@ticket.id_ticket" class="ms-2 text-decoration-none">
+                            <i class="bi bi-info-circle-fill"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        function filtrarTabla() {
+            let input = document.getElementById("busqueda").value.toLowerCase();
+            let filas = document.querySelectorAll("#tablaTickets tbody tr");
+
+            filas.forEach(fila => {
+                const texto = fila.innerText.toLowerCase();
+                fila.style.display = texto.includes(input) ? "" : "none";
+            });
+        }
+    </script>
+}
