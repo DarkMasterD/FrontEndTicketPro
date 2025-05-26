@@ -8,7 +8,6 @@ namespace FrontEndTicketPro.Controllers
 
         public IActionResult Inicio()
         {
-            // Esto es solo para desarrollo, luego se puede eliminar
             return View();
         }
     }
