@@ -1,0 +1,168 @@
+﻿@model FrontEndTicketPro.Models.Cliente.MiInfo
+
+@{
+    ViewData["Title"] = "Mi Información";
+}
+
+<div class="container mt-4">
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    }
+
+    @if (TempData["Exito"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Exito"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i> @ViewBag.Error
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    }
+    <h4><i class="bi bi-person-fill"></i> Datos personales / Editar</h4>
+    <form method="post" asp-action="GuardarMiInfo">
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <label class="form-label"><i class="bi bi-person"></i> Nombre</label>
+                <input class="form-control" name="Nombre" value="@Model.Nombre" required />
+
+                <label class="form-label mt-3"><i class="bi bi-person"></i> Apellido</label>
+                <input class="form-control" name="Apellido" value="@Model.Apellido" required />
+
+                <label class="form-label mt-3"><i class="bi bi-building"></i> Nombre de la empresa</label>
+                <input class="form-control" name="Empresa" value="@Model.Empresa" required />
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label"><i class="bi bi-person-circle"></i> Usuario</label>
+                <input class="form-control" name="NombreUsuario" value="@Model.NombreUsuario" required/>
+
+                <label class="form-label mt-3"><i class="bi bi-envelope"></i> Correo electrónico</label>
+                <input class="form-control" value="@Model.Email" readonly />
+
+                <label class="form-label mt-3"><i class="bi bi-calendar-event"></i> Fecha de registro</label>
+                <input class="form-control" value="@Model.FechaRegistro" readonly />
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-6 d-grid">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCambiarContra">
+                    <i class="bi bi-lock-fill"></i> Cambiar contraseña
+                </button>
+            </div>
+            <div class="col-md-6 d-grid">
+                <button type="button" class="btn btn-info text-white" data-bs-toggle="modal" data-bs-target="#modalContacto">
+                    Ver información de contacto
+                </button>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-end gap-3">
+            <a class="btn btn-outline-dark" href="@Url.Action("Inicio", "Cliente")">Cancelar</a>
+            <button type="submit" class="btn btn-success">Guardar</button>
+        </div>
+    </form>
+</div>
+
+
+
+
+<!-- Modal Contacto -->
+<div class="modal fade" id="modalContacto" tabindex="-1" aria-labelledby="modalContactoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post" asp-action="AgregarContacto">
+                <!-- Campo oculto obligatorio -->
+                <input type="hidden" name="NuevoContacto.IdUsuario" value="@Context.Session.GetInt32("id_usuario")" />
+
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="modalContactoLabel">Información de contacto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+
+                <div class="modal-body">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var c in Model.Contactos)
+                            {
+                                <tr>
+                                    <td>@(string.IsNullOrWhiteSpace(c.Email) ? "-" : c.Email)</td>
+                                    <td>@(string.IsNullOrWhiteSpace(c.Telefono) ? "-" : c.Telefono)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <hr />
+                    <h6>Agregar nuevo contacto</h6>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <input asp-for="NuevoContacto.Email" class="form-control" placeholder="Nuevo correo" />
+                        </div>
+                        <div class="col-md-6">
+                            <input asp-for="NuevoContacto.Telefono" class="form-control" placeholder="Nuevo teléfono" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer mt-3">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-success">Guardar nuevo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Cambiar Contraseña -->
+<div class="modal fade" id="modalCambiarContra" tabindex="-1" aria-labelledby="modalCambiarContraLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" asp-action="CambiarContrasenia">
+                <input type="hidden" name="IdUsuario" value="@Context.Session.GetInt32("id_usuario")" />
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="modalCambiarContraLabel">Cambiar contraseña</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Contraseña actual</label>
+                        <input type="password" name="Actual" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label>Nueva contraseña</label>
+                        <input type="password" name="Nueva" class="form-control" required
+                               pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$"
+                               title="Debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Confirmar nueva contraseña</label>
+                        <input type="password" name="Confirmacion" class="form-control" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Guardar cambios</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
