@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace FrontEndTicketPro.Models
 {
@@ -60,6 +61,21 @@ namespace FrontEndTicketPro.Models
         public string Codigo { get; set; }
         public string Titulo { get; set; }
         public string Descripcion { get; set; }
+        // NUEVO: para mostrar el combobox
+        public List<SelectListItem> Tecnicos { get; set; }
+        // NUEVO: para capturar el técnico seleccionado
+        public string IdTecnicoSeleccionado { get; set; }
         public List<TareaTicketItem> Tareas { get; set; }
+    }
+
+    public class NuevaTareaDto
+    {
+        public int IdTicket { get; set; }
+        public int IdUsuarioInterno { get; set; }  // Técnico asignado
+        public string Nombre { get; set; }
+        public string Descripcion { get; set; }
+        public string Estado { get; set; }  // 'Asignada', 'En progreso', etc.
+        public DateTime FechaInicio { get; set; }
+        public DateTime? FechaFin { get; set; }  // Opcional
     }
 }
