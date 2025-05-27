@@ -1,0 +1,77 @@
+﻿@using FrontEndTicketPro.Models
+@{
+    ViewData["Title"] = "Tiempos Promedio por Día";
+    var tiempos = ViewBag.Tiempos as List<TiempoResolucion>;
+}
+
+
+<h2 class="mb-4">Tiempos Promedio de Resolución por Día</h2>
+<a asp-action="Index" class="btn btn-outline-secondary mb-3">
+    <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
+</a>
+
+@if (tiempos == null || !tiempos.Any())
+{
+    <p class="text-danger">No hay datos disponibles para mostrar.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Día</th>
+                <th>Horas Promedio</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in tiempos)
+            {
+                <tr>
+                    <td>@item.Dia</td>
+                    <td>@item.HorasPromedio</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+    <canvas id="graficoTiempos" width="800" height="400"></canvas>
+
+    @section Scripts {
+    <script>
+        const data = {
+            labels: @Html.Raw(Json.Serialize(tiempos.Select(t => t.Dia))),
+            datasets: [{
+                label: 'Horas Promedio',
+                data: @Html.Raw(Json.Serialize(tiempos.Select(t => t.HorasPromedio))),
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const config = {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Horas'
+                        }
+                    }
+                }
+            }
+        };
+
+        new Chart(
+            document.getElementById('graficoTiempos'),
+            config
+        );
+    </script>
+    }
+
+
+}

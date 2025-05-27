@@ -1,6 +1,63 @@
-﻿@{
+﻿@model FrontEndTicketPro.Models.Cliente.ClienteInicio
+
+@{
     ViewData["Title"] = "Inicio Cliente";
 }
 
-<h2>Bienvenido Cliente</h2>
-<p>Esta es la vista inicial para clientes.</p>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Hola, @Model.NombreCliente 👋 Bienvenido a TicketPro</h4>
+        <a href="#" class="btn btn-dark">
+            <i class="bi bi-plus-circle"></i> Crear un nuevo Ticket
+        </a>
+    </div>
+
+    <h5>Resumen</h5>
+    <div class="row text-center mb-4">
+        <div class="col-md-4">
+            <div class="bg-warning text-dark p-2 rounded fw-bold">
+                <i class="bi bi-exclamation-circle"></i> @Model.NoAsignado Tickets no asignados
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="bg-primary text-white p-2 rounded fw-bold">
+                <i class="bi bi-person-walking"></i> @Model.EnProgreso Tickets en progreso
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="bg-success text-white p-2 rounded fw-bold">
+                <i class="bi bi-patch-check-fill"></i> @Model.Resuelto Tickets resueltos
+            </div>
+        </div>
+    </div>
+
+    <h5>Últimos tickets creados</h5>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Título</th>
+                <th>Estado</th>
+                <th>Código</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ticket in Model.UltimosTickets ?? new List<FrontEndTicketPro.Models.Cliente.TicketResumen>())
+            {
+                var badge = ticket.Estado switch
+                {
+                    "No asignado" => "warning",
+                    "En Progreso" => "primary",
+                    "Resuelto" => "success",
+                    _ => "secondary"
+                };
+                <tr>
+                    <td>@ticket.Titulo</td>
+                    <td><span class="badge bg-@badge">@ticket.Estado</span></td>
+                    <td>@ticket.Codigo</td>
+                   
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

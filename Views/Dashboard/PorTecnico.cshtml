@@ -1,0 +1,86 @@
+﻿@using FrontEndTicketPro.Models.Admin
+@{
+    ViewData["Title"] = "Rendimiento por Técnico";
+    var tecnicos = ViewBag.Tecnicos as List<RendimientoTecnico>;
+}
+
+<h2 class="mb-4">📊 Rendimiento por Técnico</h2>
+<form method="get" asp-action="PorTecnico" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Fecha Inicio</label>
+        <input type="date" name="fechaInicio" class="form-control" value="@Context.Request.Query["fechaInicio"]" />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Fecha Fin</label>
+        <input type="date" name="fechaFin" class="form-control" value="@Context.Request.Query["fechaFin"]" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Nombre del Técnico</label>
+        <input type="text" name="tecnico" class="form-control" placeholder="Ej. Carlos" value="@Context.Request.Query["tecnico"]" />
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+    </div>
+</form>
+
+<a asp-action="Index" class="btn btn-outline-secondary mb-3">
+    <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
+</a>
+
+@if (tecnicos == null || !tecnicos.Any())
+{
+    <p class="text-danger">No hay datos disponibles para mostrar.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Técnico</th>
+                <th>Tickets Resueltos</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in tecnicos)
+            {
+                <tr>
+                    <td>@item.Tecnico</td>
+                    <td>@item.TicketsResueltos</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <canvas id="graficoTecnico" width="800" height="400"></canvas>
+
+    @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const dataTecnico = {
+            labels: @Html.Raw(Json.Serialize(tecnicos.Select(t => t.Tecnico))),
+            datasets: [{
+                label: 'Tickets Resueltos',
+                data: @Html.Raw(Json.Serialize(tecnicos.Select(t => t.TicketsResueltos))),
+                backgroundColor: 'rgba(144, 238, 144, 0.5)',
+                borderColor: 'rgba(34, 139, 34, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const configTecnico = {
+            type: 'bar',
+            data: dataTecnico,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        new Chart(document.getElementById('graficoTecnico'), configTecnico);
+    </script>
+    }
+}
