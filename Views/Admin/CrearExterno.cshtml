@@ -50,7 +50,7 @@
             </div>
         </div>
 
-        <div class="row mb-3">
+         <div class="row mb-3">
             <div class="col-md-6">
                 <label asp-for="Email" class="form-label">
                     <i class="bi bi-envelope-at-fill me-1"></i>Correo Electrónico
@@ -58,47 +58,27 @@
                 <input asp-for="Email" type="email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-@*              <div class="col-md-6">
-                 <label asp-for="Contrasena" class="form-label">
-                     <i class="bi bi-shield-lock me-1"></i>Contraseña
-                 </label>
-                 <input asp-for="Contrasena" type="password" class="form-control" />
-                 <span asp-validation-for="Contrasena" class="text-danger"></span>
-             </div> *@
-            @if (!Model.IdUsuario.HasValue)
-            {
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label asp-for="Contrasena" class="form-label">
-                            <i class="bi bi-shield-lock me-1"></i>Contraseña
-                        </label>
-                        <input asp-for="Contrasena" type="password" class="form-control" />
-                        <span asp-validation-for="Contrasena" class="text-danger"></span>
-                    </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label">
-                            <i class="bi bi-person-badge me-1"></i>Tipo de Usuario
-                        </label>
-                        <input class="form-control" value="Usuario externo" disabled />
-                        <input type="hidden" asp-for="TipoUsuario" value="E" />
-                    </div>
-                </div>
-            }
-            else
-            {
-                <div class="row mb-3">
-                    <div class="col-md-6 offset-md-6">
-                        <label class="form-label">
-                            <i class="bi bi-person-badge me-1"></i>Tipo de Usuario
-                        </label>
-                        <input class="form-control" value="Usuario externo" disabled />
-                        <input type="hidden" asp-for="TipoUsuario" value="E" />
-                    </div>
-                </div>
-            }
-
+            <div class="col-md-6">
+                @if (!Model.IdUsuario.HasValue)
+                {
+                    <label asp-for="Contrasena" class="form-label">
+                        <i class="bi bi-shield-lock me-1"></i>Contraseña
+                    </label>
+                    <input asp-for="Contrasena" type="password" class="form-control" />
+                    <span asp-validation-for="Contrasena" class="text-danger"></span>
+                }
+                else
+                {
+                    <label class="form-label">
+                        <i class="bi bi-person-badge me-1"></i>Tipo de Usuario
+                    </label>
+                    <input class="form-control" value="Usuario externo" disabled />
+                    <input type="hidden" asp-for="TipoUsuario" value="E" />
+                }
+            </div>
         </div>
+
 
         <div class="text-center mt-4">
         @{

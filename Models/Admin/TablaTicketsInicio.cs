@@ -9,7 +9,6 @@
         public string Estado { get; set; }
         public string Prioridad { get; set; }
         public DateTime Fecha { get; set; }
-        public int? IdTicket { get; set; }
 
     }
 
