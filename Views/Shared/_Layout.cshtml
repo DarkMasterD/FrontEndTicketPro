@@ -1,14 +1,24 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var rol = Context.Session.GetString("Rol");
+}
+
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - TicketPro</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="~/css/site.css" />
+
+    <!-- Evitar caché al presionar atrás -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
 </head>
+
 <style>
     html, body {
         height: 100%;
@@ -24,14 +34,10 @@
     main {
         flex: 1;
     }
-
 </style>
-<body>
-    @* Selección dinámica de navbar por rol *@
-    @{
-        var rol = Context.Session.GetString("Rol");
-    }
 
+<body>
+    <!-- Navbar dinámico según rol -->
     @if (rol == "cliente")
     {
         @Html.Partial("_NavbarCliente")
@@ -45,15 +51,25 @@
         @Html.Partial("_NavbarAdmin")
     }
 
-    @* Aquí es donde se inserta el contenido de la vista actual *@
+    <!-- Contenido principal -->
     <main class="container mt-4">
         @RenderBody()
     </main>
 
+   
+
+    <!-- Footer -->
     <footer class="text-center mt-5 text-muted p-3 fw-bold" style="background-color: #BCBCBC;">
         TicketPro v1.0 | Soporte técnico | © 2025
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+            crossorigin="anonymous">
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @RenderSection("Scripts", required: false)
+
 </body>
 </html>
