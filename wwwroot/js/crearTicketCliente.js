@@ -31,6 +31,11 @@ function guardarArchivo() {
 document.getElementById("formCrearTicket").addEventListener("submit", async function (event) {
     event.preventDefault();
 
+    const codigo = document.getElementById("codigoTicket").value;
+    if (!codigo) {
+        alert("Debe generar el código del ticket antes de crearlo.");
+        return;
+    }
     const ticket = {
         id_ticket: 0,
         codigo: document.getElementById("codigoTicket").value,
