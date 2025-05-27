@@ -1,0 +1,128 @@
+﻿@model List<FrontEndTicketPro.Models.HistorialTicketDTO>
+@{
+    ViewData["Title"] = "Historial de Tickets";
+}
+
+<div class="container mt-4 p-4 bg-white rounded shadow-sm">
+    <h3 class="fw-bold text-center mb-4">🗂️ Historial de Tickets</h3>
+
+    <!-- ✅ Buscar por aplicación arriba -->
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <input type="text" class="form-control" id="busqueda" placeholder="🔍 Buscar por aplicación">
+        </div>
+    </div>
+
+    <!-- ✅ Filtros de fecha abajo -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <label class="form-label">Fecha inicio:</label>
+            <input type="date" class="form-control" id="fechaInicio">
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Fecha fin:</label>
+            <input type="date" class="form-control" id="fechaFin">
+        </div>
+    </div>
+
+    <!-- Tabla de resultados -->
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Titulo de Ticket</th>
+                <th>Estado</th>
+                <th>Categoria</th>
+                <th>Prioridad</th>
+                <th>Fecha</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="tablaTickets">
+            @foreach (var t in Model)
+            {
+                <tr>
+                    <td>@t.Titulo</td>
+                    <td>
+                        @if (t.Estado == "Resuelto")
+                        {
+                            <span class="badge bg-success">✔ Resuelto</span>
+                        }
+                        else if (t.Estado == "En Progreso")
+                        {
+                            <span class="badge bg-primary">🛠 En proceso</span>
+                        }
+                        else if (t.Estado == "No asignado")
+                        {
+                            <span class="badge bg-warning text-dark">⏳ No asignado</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">@t.Estado</span>
+                        }
+                    </td>
+                    <td>@t.Categoria</td>
+                    <td>
+                        @if (t.Prioridad == "Crítico")
+                        {
+                            <span class="badge bg-danger">🔴 Crítico</span>
+                        }
+                        else if (t.Prioridad == "Importante")
+                        {
+                            <span class="badge bg-info text-dark">🔵 Importante</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark">🟡 Baja</span>
+                        }
+                    </td>
+                    <td>@t.Fecha.ToShortDateString()</td>
+                    <td>
+                        <a href="@Url.Action("IndexDetalleTicket", "Ticket", new { id_ticket = t.IdTicket })" class="btn btn-sm btn-outline-dark">
+                            <i class="bi bi-info-circle"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+    <script>
+        const busquedaInput = document.getElementById("busqueda");
+        const fechaInicio = document.getElementById("fechaInicio");
+        const fechaFin = document.getElementById("fechaFin");
+        const tabla = document.getElementById("tablaTickets");
+
+        function filtrar() {
+            const texto = busquedaInput.value.toLowerCase();
+            const inicio = fechaInicio.value;
+            const fin = fechaFin.value;
+
+            for (let row of tabla.rows) {
+                const titulo = row.cells[0].innerText.toLowerCase();
+                const estado = row.cells[1].innerText.toLowerCase();
+                const categoria = row.cells[2].innerText.toLowerCase();
+                const prioridad = row.cells[3].innerText.toLowerCase();
+                const fecha = row.cells[4].innerText;
+                const fechaTicket = new Date(fecha);
+
+                let mostrar = true;
+
+                if (texto && !titulo.includes(texto) && !estado.includes(texto) && !categoria.includes(texto) && !prioridad.includes(texto)) {
+                    mostrar = false;
+                }
+
+                if (inicio && new Date(inicio) > fechaTicket) mostrar = false;
+                if (fin && new Date(fechaTicket) > new Date(fin)) mostrar = false;
+
+                row.style.display = mostrar ? "" : "none";
+            }
+        }
+
+        busquedaInput.addEventListener("input", filtrar);
+        fechaInicio.addEventListener("change", filtrar);
+        fechaFin.addEventListener("change", filtrar);
+    </script>
+}
