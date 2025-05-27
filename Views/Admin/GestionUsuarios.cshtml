@@ -1,0 +1,81 @@
+﻿@model FrontEndTicketPro.Models.Admin.UsuariosAdminViewModel
+
+<div class="container mt-4 bg-white p-4 rounded shadow-sm">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="fw-bold">Lista de Usuarios</h5>
+    </div>
+
+    <form method="get" asp-action="Usuarios">
+        <div class="row align-items-center g-2 mb-3">
+
+            <div class="col-md-4">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="busqueda" placeholder="Buscar por nombre" value="@Model.Busqueda" />
+                    <button type="submit" class="btn btn-dark">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <select name="filtroRol" class="form-select w-100" onchange="this.form.submit()">
+                    <option value="">Filtrar por rol</option>
+                    @foreach (var rol in Model.Roles)
+                    {
+                        <option value="@rol.Value" selected="@(Model.FiltroRol?.ToString() == rol.Value)">
+                            @rol.Text
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-4 text-md-end">
+                <a class="btn px-4 text-light" style="background: #8FD344" asp-controller="Admin" asp-action="SeleccionarTipo">
+                    <i class="bi bi-person-plus-fill me-2"></i> Crear un nuevo Usuario
+                </a>
+            </div>
+
+        </div>
+    </form>
+
+
+    <table class="table table-bordered table-hover rounded text-center">
+        <thead class="table-light">
+            <tr>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Rol</th>
+                <th>Empresa</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var u in Model.Usuarios)
+            {
+                <tr>
+                    <td>@u.Nombre</td>
+                    <td>@u.Correo</td>
+                    <td>@u.Rol</td>
+                    <td>@u.Empresa</td>
+                    <td>
+                        <a 
+                            asp-action="EditarExterno" 
+                            asp-controller="Admin" 
+                            asp-route-id="@u.IdUsuario"
+                            class="btn btn-primary btn-sm px-3 me-2"
+                        >
+                            Editar
+                        </a>
+                        <a href="#" class="btn btn-danger btn-sm px-3">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="text-end mt-5">
+        <a href="#" class="btn btn-secondary px-4">
+            <i class="bi bi-gear-fill me-2"></i> Gestionar permisos
+        </a>
+    </div>
+</div>
