@@ -1,0 +1,91 @@
+﻿@model FrontEndTicketPro.Models.Admin.ContactosUsuarioViewModel
+@{
+    ViewData["Title"] = "Agregar Información de Contacto";
+}
+
+<div class="container mt-4 bg-white p-5 rounded shadow">
+    <h3 class="fw-bold mb-4 text-center">Información de Contacto</h3>
+        <!-- FORMULARIO PARA AGREGAR UNO TEMPORAL -->
+        <form asp-action="AgregarContactoTemporal" asp-controller="Admin" method="post" class="row mb-3">
+            <input type="hidden" name="IdUsuario" value="@Model.IdUsuario" />
+            <div class="col-md-5">
+                <input name="NuevoCorreo" class="form-control" placeholder="Correo adicional" />
+            </div>
+            <div class="col-md-5">
+                <input name="NuevoTelefono" class="form-control" placeholder="Telefono" />
+            </div>
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@error.ErrorMessage</li>
+                    }
+                </ul>
+            </div>
+        }
+
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success w-100">Agregar</button>
+            </div>
+        </form>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Correo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var c in Model.Correos)
+                    {
+                        <tr>
+                            <td>@c.email</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-primary">Editar</button>
+                                <button type="button" class="btn btn-sm btn-danger">Eliminar</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="col-md-6">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Teléfono</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in Model.Telefonos)
+                    {
+                        <tr>
+                            <td>@t.telefono</td>
+                            <td>
+                                <button type="button" class="btn btn-sm btn-primary">Editar</button>
+                                <button type="button" class="btn btn-sm btn-danger">Eliminar</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- FORMULARIO PARA GUARDAR Y SALIR -->
+    <form asp-action="GuardarContactos" method="post">
+        <input type="hidden" asp-for="IdUsuario" />
+        <div class="text-center">
+            <a asp-action="Usuarios" class="btn btn-outline-dark px-4 me-3">Cancelar</a>
+            <button type="submit" class="btn btn-success px-4">Guardar</button>
+        </div>
+    </form>
+</div>
