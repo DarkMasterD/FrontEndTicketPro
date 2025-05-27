@@ -9,12 +9,19 @@
     <input type="hidden" id="id_usuario" value="@Context.Session.GetInt32("id_usuario")" />
 
     <form id="formActualizarPerfil" asp-action="ActualizarPerfil" method="post">
+        <input type="hidden" name="IdUsuario" value="@Context.Session.GetInt32("id_usuario")" />
+
         <div class="row">
             <div class="col-md-6">
                 <div class="form-group">
-                    <label class="form-label" asp-for="NombreCompleto"></label>
-                    <input asp-for="NombreCompleto" class="form-control" />
-                    <span asp-validation-for="NombreCompleto" class="text-danger"></span>
+                    <label class="form-label" asp-for="Nombres"></label>
+                    <input asp-for="Nombres" class="form-control" />
+                    <span asp-validation-for="Nombres" class="text-danger"></span>
+
+                    <label class="form-label" asp-for="Apellidos"></label>
+                    <input asp-for="Apellidos" class="form-control mt-2" />
+                    <span asp-validation-for="Apellidos" class="text-danger"></span>
+
                 </div>
 
                 <div class="form-group mt-3">
