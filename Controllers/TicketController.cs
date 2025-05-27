@@ -4,6 +4,7 @@ using System.Net.Sockets;
 
 namespace FrontEndTicketPro.Controllers
 {
+    [SessionAuthorize]
     public class TicketController : Controller
     {
         private readonly HttpClient _http;
@@ -124,7 +125,7 @@ namespace FrontEndTicketPro.Controllers
             {
                 id_ticket = id_ticket,
                 estado = estado,
-                id_usuario_interno = 1, // Cambia esto por el ID del usuario interno que está actualizando el ticket(httpsession)
+                id_usuario_interno = HttpContext.Session.GetInt32("id_usuario"), 
                 nombre_progreso = nombre_progreso,
                 descripcion_progreso = descripcion_progreso
             };
