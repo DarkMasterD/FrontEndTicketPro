@@ -1,0 +1,120 @@
+﻿@using FrontEndTicketPro.Models.Admin
+@{
+    ViewData["Title"] = "Dashboard";
+    var resumen = ViewBag.Resumen as DashboardResumen;
+    var tickets = ViewBag.Tickets as List<TablaTicketsInicio>;
+}
+@{
+    var prioridadActual = Context.Request.Query["prioridad"].ToString();
+}
+@{
+    var estadoActual = Context.Request.Query["estado"].ToString();
+}
+<h2 class="mb-4">📈 Dashboard</h2>
+<a class="btn btn-primary" asp-action="PorCategoria">Tickets por Categoría</a>
+<a class="btn btn-success" asp-action="PorTecnico">Rendimiento por Técnico</a>
+<a class="btn btn-warning" asp-action="TiemposPromedioPorDia">Tiempos de Resolución</a>
+<form method="get" asp-action="Index" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Fecha Inicio</label>
+        <input type="date" name="fechaInicio" class="form-control" value="@Context.Request.Query["fechaInicio"]" />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Fecha Fin</label>
+        <input type="date" name="fechaFin" class="form-control" value="@Context.Request.Query["fechaFin"]" />
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">Categoría</label>
+        <input type="text" name="categoria" class="form-control" placeholder="Ej. Red" value="@Context.Request.Query["categoria"]" />
+    </div>
+    <div class="col-md-2">
+        <label class="form-label">Estado</label>
+        <select name="estado" class="form-select">
+            <option value="">Todos</option>
+            <option value="En Progreso" selected="@(estadoActual == "En Progreso" ? "selected" : null)">En Progreso</option>
+            <option value="No asignado" selected="@(estadoActual == "No asignado" ? "selected" : null)">No asignado</option>
+            <option value="Resuelto" selected="@(estadoActual == "Resuelto" ? "selected" : null)">Resuelto</option>
+            <option value="En espera de información del cliente" selected="@(estadoActual == "En espera de información del cliente" ? "selected" : null)">En espera de información del cliente</option>
+
+        </select>
+    </div>
+    <div class="col-12 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary mt-3">Filtrar</button>
+    </div>
+</form>
+
+@if (resumen == null || tickets == null)
+{
+    <p class="text-danger">No hay datos disponibles.</p>
+}
+else
+{
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h4>Resumen de Estados de Tickets</h4>
+            <canvas id="graficoResumen" width="400" height="400"></canvas>
+        </div>
+        <div class="col-md-6">
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Estado</th>
+                        <th>Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>No Asignados</td>
+                        <td>@resumen.TicketsNoAsignados</td>
+                    </tr>
+                    <tr>
+                        <td>En Progreso</td>
+                        <td>@resumen.TicketsEnProgreso</td>
+                    </tr>
+                    <tr>
+                        <td>Resueltos</td>
+                        <td>@resumen.TicketsResueltos</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+   
+
+    @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const dataResumen = {
+            labels: ['No Asignados', 'En Progreso', 'Resueltos'],
+            datasets: [{
+                label: 'Tickets',
+                data: [
+        @resumen.TicketsNoAsignados,
+        @resumen.TicketsEnProgreso,
+        @resumen.TicketsResueltos
+                            ],
+                backgroundColor: [
+                    '#f39c12',
+                    '#3498db',
+                    '#e74c3c',
+                    '#2ecc71'
+                ]
+            }]
+        };
+
+        const configResumen = {
+            type: 'doughnut',
+            data: dataResumen,
+            options: {
+                responsive: true
+            }
+        };
+
+        new Chart(
+            document.getElementById('graficoResumen'),
+            configResumen
+        );
+    </script>
+    }
+}

@@ -1,0 +1,86 @@
+﻿@using FrontEndTicketPro.Models.Admin
+@{
+    ViewData["Title"] = "Tickets por Categoría";
+    var categorias = ViewBag.Categorias as List<TicketsPorCategoria>;
+}
+
+<h2 class="mb-4">📊 Tickets por Categoría</h2>
+<form method="get" asp-action="PorCategoria" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Fecha Inicio</label>
+        <input type="date" name="fechaInicio" class="form-control" value="@Context.Request.Query["fechaInicio"]" />
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Fecha Fin</label>
+        <input type="date" name="fechaFin" class="form-control" value="@Context.Request.Query["fechaFin"]" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">Buscar Categoría</label>
+        <input type="text" name="categoria" class="form-control" value="@Context.Request.Query["categoria"]" placeholder="Ej. Red" />
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+    </div>
+</form>
+
+<a asp-action="Index" class="btn btn-outline-secondary mb-3">
+    <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
+</a>
+
+@if (categorias == null || !categorias.Any())
+{
+    <p class="text-danger">No hay datos disponibles para mostrar.</p>
+}
+else
+{
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Categoría</th>
+                <th>Cantidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in categorias)
+            {
+                <tr>
+                    <td>@item.Categoria</td>
+                    <td>@item.Tickets</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <canvas id="graficoCategoria" width="800" height="400"></canvas>
+
+    @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const dataCategoria = {
+            labels: @Html.Raw(Json.Serialize(categorias.Select(c => c.Categoria))),
+            datasets: [{
+                label: 'Tickets por Categoría',
+                data: @Html.Raw(Json.Serialize(categorias.Select(c => c.Tickets))),
+                backgroundColor: 'rgba(0, 123, 255, 0.5)',
+                borderColor: 'rgba(0, 123, 255, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const configCategoria = {
+            type: 'bar',
+            data: dataCategoria,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        new Chart(document.getElementById('graficoCategoria'), configCategoria);
+    </script>
+    }
+}

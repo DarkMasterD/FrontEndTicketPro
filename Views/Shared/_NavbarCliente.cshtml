@@ -7,24 +7,25 @@
         <div class="collapse navbar-collapse justify-content-center" id="navbarCliente">
             <ul class="navbar-nav mb-2 mb-lg-0">
                 <li class="nav-item me-3">
-                    <a class="nav-link active" asp-controller="Home" asp-action="Index">Inicio</a>
+                    <a class="nav-link active" asp-controller="Cliente" asp-action="Inicio">Inicio</a>
                 </li>
                 <li class="nav-item me-3">
-                    <a class="nav-link" asp-controller="Ticket" asp-action="MisTickets">Mis Tickets</a>
+                    <a class="nav-link" asp-controller="Cliente" asp-action="MisTickets">Mis Tickets</a>
                 </li>
                 <li class="nav-item me-3">
-                    <a class="nav-link" asp-controller="Ticket" asp-action="Crear">Crear Ticket</a>
+                    <a class="nav-link" asp-controller="Cliente" asp-action="CrearTicketCliente">Crear Ticket</a>
                 </li>
                 <li class="nav-item me-2">
-                    <a class="nav-link" asp-controller="Usuario" asp-action="MiInformacion">Mi Información</a>
+                    <a class="nav-link" asp-controller="Cliente" asp-action="MiInfo">Mi Información</a>
                 </li>
             </ul>
         </div>
-
-        <form class="d-flex">
-            <a class="btn btn-outline-light" asp-controller="Auth" asp-action="CerrarSesion">
-                <i class="bi bi-box-arrow-in-right"></i> Cerrar Sesión
-            </a>
+        <form asp-controller="Login" asp-action="CerrarSesion" method="post" class="d-flex">
+            <button type="submit" class="btn btn-outline-light">
+                <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+            </button>
         </form>
+
+
     </div>
 </nav>

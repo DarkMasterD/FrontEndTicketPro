@@ -1,0 +1,229 @@
+﻿@model FrontEndTicketPro.Models.Admin.TicketDetalleViewModel
+@{
+    ViewData["Title"] = "Detalle de Ticket - Administrador";
+}
+
+<div class="container bg-white p-3">
+    <h3 class="text-center fw-bold mb-4">📋 Detalle del ticket</h3>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <label class="fw-bold">Título:</label>
+            <input class="form-control bg-white" value="@Model.Titulo" readonly />
+
+            <label class="fw-bold mt-3">Aplicación o servicio:</label>
+            <input class="form-control bg-white" value="@Model.Servicio" readonly />
+
+            <label class="fw-bold mt-3">Descripción:</label>
+            <textarea class="form-control bg-white" rows="4" readonly>@Model.Descripcion</textarea>
+
+            <div class="mt-2 d-flex justify-content-between">
+                <label class="fw-bold">Cliente afectado:</label><br />
+                <div>
+                    <label class="fw-bold me-1">Archivos adjuntos:</label>
+
+                    @if (!string.IsNullOrEmpty(Model.UrlArchivo))
+                    {
+                        @* <a href="@Model.UrlArchivo" target="_blank">click aquí</a> *@
+                        <a href="@($"https://localhost:7141{Model.UrlArchivo}")" target="_blank">click aquí</a>
+
+                    }
+                    else
+                    {
+                        <span class="text-muted">No adjuntos</span>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-1 border rounded p-3 bg-white">
+                @* <label class="fw-bold">Cliente afectado:</label><br /> *@
+                <span>Nombre: @Model.ClienteNombre</span><br />
+                <span>Correo: @Model.ClienteCorreo</span><br />
+                <span>Teléfono: @Model.ClienteTelefono</span>
+            </div>
+
+            
+        </div>
+
+        <div class="col-md-6 d-flex flex-column justify-content-between">
+            <div>
+                <label class="fw-bold">Ticket:</label>
+                <input class="form-control bg-white" value="@Model.Codigo" readonly />
+
+                <label class="fw-bold mt-3">Categoría:</label>
+                <input class="form-control bg-white" value="@Model.Categoria" readonly />
+
+                <label class="fw-bold mt-3">Prioridad:</label>
+                @{
+                    string prioridadClase = Model.Prioridad switch
+                    {
+                        "Importante" => "border-primary text-primary",
+                        "Baja" => "border-warning text-warning",
+                        "Crítico" => "border-danger text-danger",
+                        _ => "border-secondary text-dark"
+                    };
+                }
+                <input class="form-control fw-bold bg-white @prioridadClase" value="@Model.Prioridad" readonly />
+
+                @* <input class="form-control border-danger text-danger fw-bold bg-white" value="@Model.Prioridad" readonly /> *@
+
+                <div class="d-grid mt-4">
+                    <a asp-action="AsignarTarea" asp-route-id="@Model.IdTicket" class="btn text-white" style="background-color: #387089">Asignar Tarea</a>
+                </div>
+            </div>
+
+            <!-- Botones al fondo -->
+            <div class="d-flex justify-content-center gap-3 mt-5">
+                @* <a asp-action="Actualizar" asp-route-id="@Model.IdTicket" class="btn w-50 text-white" style="background-color: #0A2239">Actualizar Ticket</a> *@
+                <!-- Botón que abre el modal -->
+                <a href="#" class="btn w-50 text-white" data-bs-toggle="modal" data-bs-target="#modalActualizarTicket" style="background-color: #0A2239">
+                    Actualizar Ticket
+                </a>
+
+                @* <a asp-action="Cerrar" asp-route-id="@Model.IdTicket" class="btn w-50 text-white" style="background-color: #8FD344">Cerrar Ticket</a> *@
+                <a href="#" class="btn w-50 text-white" style="background-color: #8FD344" onclick="cerrarTicket(@Model.IdTicket)">Cerrar Ticket</a>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- Modal Actualizar Ticket -->
+@{
+    var estados = new List<string> {
+                    "En Progreso",
+                    "No asignado",
+                    "Resuelto",
+                    "En espera de información del cliente"
+            };
+    var estadoActual = Model.Estado;
+}
+<div class="modal fade" id="modalActualizarTicket" tabindex="-1" aria-labelledby="modalActualizarTicketLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold" id="modalActualizarTicketLabel">Opciones para el ticket</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Formulario -->
+                <form id="formActualizarTicket">
+                    <div class="mb-3">
+                        <label class="form-label">Cambiar estado</label>
+                        <select class="form-select" name="nuevoEstado" id="nuevoEstado">
+                            <option disabled>Seleccione un estado</option>
+                            @foreach (var estado in estados)
+                            {
+                                <option value="@estado" selected="@(estado == estadoActual)">
+                                    @estado
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Enviar notificación al cliente para solicitar más información</label><br />
+                        <button type="button" class="btn btn-primary" id="btnNotificar">Enviar</button>
+                    </div>
+
+                    <hr />
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Agregar progreso</label>
+                        <textarea class="form-control" name="comentario" placeholder="Ingrese el comentario" rows="3"></textarea>
+                    </div>
+
+                    <div class="modal-footer border-0 d-flex justify-content-between">
+                        <button type="button" class="btn btn-link text-success" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Para pogreso 
+    document.getElementById("formActualizarTicket").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const estado = document.getElementById("nuevoEstado").value;
+        const comentario = this.comentario.value;
+        const idTicket = @Model.IdTicket;
+
+        try {
+            // 1. Actualizar estado
+            const r1 = await fetch("https://localhost:7141/api/ticket/actualizar-estado", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idTicket, nuevoEstado: estado })
+            });
+            if (!r1.ok) throw new Error("Error al actualizar estado");
+
+            // 2. Guardar progreso (solo si hay comentario)
+            if (comentario.trim() !== "") {
+                const r2 = await fetch("https://localhost:7141/api/ticket/registrar-progreso", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ idTicket, descripcion: comentario })
+                });
+                if (!r2.ok) throw new Error("Error al guardar progreso");
+            }
+
+            alert("Ticket actualizado correctamente");
+
+            // Cerrar modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalActualizarTicket'));
+            modal.hide();
+
+        } catch (err) {
+            console.error(err);
+            alert("Ocurrió un error al actualizar el ticket");
+        }
+    });
+
+        document.getElementById("btnNotificar").addEventListener("click", async function () {
+        const idTicket = @Model.IdTicket;
+
+        try {
+            const res = await fetch("https://localhost:7141/api/ticket/notificar-cliente", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ idTicket })
+            });
+
+            if (!res.ok) throw new Error("Error al enviar notificación");
+            alert("Correo enviado al cliente correctamente");
+        } catch (err) {
+            console.error(err);
+            alert("Error al enviar el correo");
+        }
+    });
+
+    //Cerrar ticket
+    async function cerrarTicket(idTicket) {
+        if (!confirm("¿Estás seguro de que deseas cerrar este ticket?")) return;
+
+        try {
+            const response = await fetch("https://localhost:7141/api/ticket/actualizar-estado", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    idTicket: idTicket,
+                    nuevoEstado: "Resuelto"
+                })
+            });
+
+            if (!response.ok) throw new Error("No se pudo cerrar el ticket");
+
+            alert("Ticket cerrado correctamente");
+            window.location.href = "/Admin/Inicio";
+
+        } catch (error) {
+            console.error(error);
+            alert("Ocurrió un error al cerrar el ticket");
+        }
+    }
+</script>
