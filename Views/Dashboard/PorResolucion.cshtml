@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Tiempos Promedio de Resolución por Día";
+    var tiempos = ViewBag.Tiempos as List<FrontEndTicketPro.Models.TiempoResolucion>;
+}
+
+<h2>Tiempos Promedio de Resolución por Día</h2>
+<a asp-action="Index" class="btn btn-outline-secondary mb-3">
+    <i class="bi bi-arrow-left-circle"></i> Volver al Dashboard
+</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Día de la Semana</th>
+            <th>Horas Promedio</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in tiempos)
+        {
+            <tr>
+                <td>@item.Dia</td>
+                <td>@item.HorasPromedio</td>
+            </tr>
+        }
+    </tbody>
+</table>
