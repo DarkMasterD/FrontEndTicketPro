@@ -176,5 +176,7 @@ namespace FrontEndTicketPro.Controllers
             ViewBag.id_ticket = id_ticket; // Guardar el id_ticket en ViewBag para usarlo en la vista
             return View(datosTareaTicket);
         }
+
+
     }
 }
