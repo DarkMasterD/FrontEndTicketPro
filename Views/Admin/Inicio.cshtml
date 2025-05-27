@@ -52,19 +52,20 @@
         <div class="row g-2 justify-content-between align-items-center mb-3">
             <div class="col-md-6 w-75">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Buscar ticket…" style="background: #F1F3F6;" />
+                    <input type="text" class="form-control" placeholder="Buscar ticket…" style="background: #F1F3F6;" id="inputBusqueda" />
                     <button class="btn btn-dark">
                         <i class="bi bi-search"></i>
                     </button>
                 </div>
             </div>
             <div class="col-auto">
-                <select class="form-select">
-                    <option>Filtrar por estado</option>
-                    <option>En progreso</option>
-                    <option>No asignado</option>
-                    <option>Resuelto</option>
+                <select class="form-select" id="filtroEstado">
+                    <option value="">Filtrar por estado</option>
+                    <option value="En Progreso">En progreso</option>
+                    <option value="No asignado">No asignado</option>
+                    <option value="Resuelto">Resuelto</option>
                 </select>
+
             </div>
         </div>
 
@@ -114,9 +115,69 @@
                             </td>
                         </tr>
                     }
+                    <tr id="filaSinResultados" style="display: none;">
+                        <td colspan="7" class="text-center text-muted fw-bold">
+                            <i class="bi bi-exclamation-circle"></i> No se encontraron tickets con ese nombre o estado.
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const inputBusqueda = document.getElementById("inputBusqueda");
+        const filtroEstado = document.getElementById("filtroEstado");
+        const tabla = document.querySelector("table tbody");
+
+        inputBusqueda.addEventListener("keyup", filtrarTabla);
+        //filtroEstado.addEventListener("change", filtrarTabla);
+        filtroEstado.addEventListener("change", function () {
+            inputBusqueda.value = "";
+            filtrarTabla();
+        });
+
+        function filtrarTabla() {
+            const texto = inputBusqueda.value.toLowerCase();
+            const estado = filtroEstado.value.trim().toLowerCase();
+
+            const filas = tabla.getElementsByTagName("tr");
+            let coincidencias = 0;
+
+            Array.from(filas).forEach(fila => {
+                const columnas = fila.getElementsByTagName("td");
+
+                // Evitar contar la fila del mensaje
+                if (fila.id === "filaSinResultados") return;
+
+                if (columnas.length === 0) return;
+
+                const textoFila = Array.from(columnas)
+                    .map(td => td.textContent.trim().toLowerCase())
+                    .join(" ");
+
+                const estadoFila = columnas[3]?.textContent.trim().toLowerCase();
+
+                const coincideTexto = textoFila.includes(texto);
+                const coincideEstado = !estado || estadoFila === estado;
+
+                const visible = coincideTexto && coincideEstado;
+
+                fila.style.display = visible ? "" : "none";
+
+                if (visible) coincidencias++;
+            });
+
+            // Mostrar u ocultar mensaje de "no resultados"
+            const filaSinResultados = document.getElementById("filaSinResultados");
+            filaSinResultados.style.display = coincidencias === 0 ? "" : "none";
+        }
+
+
+    });
+</script>
+
+
 
