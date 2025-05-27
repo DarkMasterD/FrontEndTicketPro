@@ -50,6 +50,7 @@ namespace FrontEndTicketPro.Models
     {
         public string Nombre { get; set; }
         public string Estado { get; set; }
+        public string Descripcion { get; set; }
         public DateTime FechaInicio { get; set; }
         public DateTime? FechaFin { get; set; }  // Puede ser null
         public string UsuarioAsignado { get; set; } // Nombre completo del usuario
