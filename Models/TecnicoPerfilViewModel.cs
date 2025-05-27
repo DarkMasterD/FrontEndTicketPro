@@ -4,9 +4,14 @@ namespace FrontEndTicketPro.Models
 {
     public class TecnicoPerfilViewModel
     {
-        [Required(ErrorMessage = "El nombre completo es requerido")]
+        public int IdUsuario { get; set; }
+        [Required(ErrorMessage = "Los nombres son requeridos")]
         [StringLength(100, ErrorMessage = "Máximo 100 caracteres")]
-        public string NombreCompleto { get; set; }
+        public string Nombres { get; set; }
+        [Required(ErrorMessage = "Los apellidos son requeridos")]
+        [StringLength(100, ErrorMessage = "Máximo 100 caracteres")]
+        public string Apellidos { get; set; }
+
 
         [Required(ErrorMessage = "La dirección es requerida")]
         [StringLength(200, ErrorMessage = "Máximo 200 caracteres")]

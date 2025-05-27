@@ -6,10 +6,11 @@ document.getElementById("formActualizarPerfil").addEventListener("submit", async
 
     const formData = new FormData(e.target);
     const payload = {
-        IdUsuario: parseInt(idUsuario),
+        IdUsuario: parseInt(formData.get("IdUsuario")),
         Usuario: formData.get("Usuario"),
         Direccion: formData.get("Direccion"),
-        NombreCompleto: formData.get("NombreCompleto")
+        Nombres: formData.get("Nombres"),
+        Apellidos: formData.get("Apellidos")
     };
 
     try {
