@@ -68,6 +68,16 @@ namespace FrontEndTicketPro.Controllers
                         else if (rolFinal == "técnico" || rolFinal == "tecnico") // <- con o sin tilde
                             rolFinal = "tecnico";
                     }
+
+                    var internoResponse = await client.GetAsync(_configuration["ApiBaseUrl"] + $"/auth/interno/{idUsuario}");
+                    if (internoResponse.IsSuccessStatusCode)
+                    {
+                        var internoJson = await internoResponse.Content.ReadAsStringAsync();
+                        var internoData = JsonSerializer.Deserialize<JsonElement>(internoJson);
+                        var idInterno = internoData.GetProperty("id_usuario_interno").GetInt32();
+                        HttpContext.Session.SetInt32("id_usuario_interno", idInterno);
+                    }
+
                 }
 
 
