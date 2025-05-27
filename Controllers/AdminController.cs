@@ -46,7 +46,7 @@ namespace FrontEndTicketPro.Controllers
         public async Task<IActionResult> DetalleTicket(int id)
         {
             Console.WriteLine($"ID recibido: {id}");
-            var ticket = await _http.GetFromJsonAsync<TicketDetalleViewModel>($"/api/ticket/detalle/{id}");
+            var ticket = await _http.GetFromJsonAsync<FrontEndTicketPro.Models.Admin.TicketDetalleViewModel>($"/api/ticket/detalle/{id}");
             if (ticket == null)
                 return NotFound();
 
@@ -112,7 +112,7 @@ namespace FrontEndTicketPro.Controllers
         public async Task<IActionResult> Usuarios(string busqueda, int? filtroRol)
         {
             var response = await _http.GetFromJsonAsync<List<UsuarioListadoDTO>>(
-                $"api/usuarios/listar?busqueda={busqueda}&rolId={filtroRol}");
+                $"api/usuario/listar?busqueda={busqueda}&rolId={filtroRol}");
 
             var roles = await _http.GetFromJsonAsync<List<RolDTO>>("api/Rol");
 
@@ -156,7 +156,7 @@ namespace FrontEndTicketPro.Controllers
             {
                 // Aquí deberías hacer PUT a api/usuarios/actualizar-externo
 
-                var response = await _http.PutAsJsonAsync("api/usuarios/actualizar-externo", model);
+                var response = await _http.PutAsJsonAsync("api/usuario/actualizar-externo", model);
                 var rawJson = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -181,7 +181,7 @@ namespace FrontEndTicketPro.Controllers
                 if (!ModelState.IsValid)
                     return View("CrearExterno", model);
 
-                var response = await _http.PostAsJsonAsync("api/usuarios/crear-externo", model);
+                var response = await _http.PostAsJsonAsync("api/usuario/crear-externo", model);
                 var rawJson = await response.Content.ReadAsStringAsync();
 
                 if (response.StatusCode == System.Net.HttpStatusCode.Conflict)
@@ -309,7 +309,7 @@ namespace FrontEndTicketPro.Controllers
         [HttpGet]
         public async Task<IActionResult> EditarExterno(int id)
         {
-            var response = await _http.GetAsync($"api/usuarios/externo/{id}");
+            var response = await _http.GetAsync($"api/usuario/externo/{id}");
             if (!response.IsSuccessStatusCode)
             {
                 TempData["mensaje"] = "No se pudo cargar el usuario.";
