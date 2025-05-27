@@ -79,7 +79,9 @@
                     </div>
                     <div class="mb-3">
                         <label>Nueva contraseña</label>
-                        <input type="password" class="form-control" id="nueva" required minlength="6" />
+                        <input type="password" class="form-control" id="nueva" required
+                               pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$"
+                               title="Debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial" />
                     </div>
                     <div class="mb-3">
                         <label>Confirmar contraseña</label>
