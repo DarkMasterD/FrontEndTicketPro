@@ -70,7 +70,10 @@
                             <td>@t.Fecha.ToString("MM/dd/yy")</td>
                             <td>
                                 <a href="#" class="btn btn-sm text-light btn-asignar" data-id="@t.IdTicket" style="background: #8FD344;">Asignar</a>
-                                <a class="btn btn-info btn-sm text-white" style="background: #3498DB">Ver</a>
+                                <a asp-controller="Admin" asp-action="DetalleTicket" asp-route-id="@t.IdTicket"
+                                    class="btn btn-info btn-sm text-white" style="background: #3498DB">
+                                    Ver
+                                </a>
                             </td>
                         </tr>
                     }
@@ -84,7 +87,7 @@
             </tbody>
         </table>
 
-         @* Modal asignar tare *@
+         @* Modal asignar tarea *@
         <div id="modalAsignar" class="modal fade" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content p-4" style="border-radius: 1rem; border: none;">

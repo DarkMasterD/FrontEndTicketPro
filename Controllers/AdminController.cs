@@ -2,9 +2,11 @@
 using FrontEndTicketPro.Models.Admin;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Reflection;
+using System.Text;
 using System.Text.Json;
 using static System.Net.WebRequestMethods;
 
@@ -138,13 +140,13 @@ namespace FrontEndTicketPro.Controllers
 
         public IActionResult CrearInterno()
         {
-            // Retorna la vista del formulario para crear usuario interno
-            return View("CrearInterno");
+            var modelo = new UsuarioEditarViewModel(); // crea una instancia vacía
+            return View("CrearInterno", modelo);
         }
 
         public IActionResult CrearExterno()
         {
-            var modelo = new UsuarioExternoViewModel(); // crea una instancia vacía
+            var modelo = new UsuarioEditarViewModel(); // crea una instancia vacía
             return View("CrearExterno", modelo);
         }
 
@@ -155,8 +157,8 @@ namespace FrontEndTicketPro.Controllers
             if (model.IdUsuario.HasValue)
             {
                 // Aquí deberías hacer PUT a api/usuarios/actualizar-externo
+                var response = await _http.PutAsJsonAsync("api/usuario/actualizar", model);
 
-                var response = await _http.PutAsJsonAsync("api/usuario/actualizar-externo", model);
                 var rawJson = await response.Content.ReadAsStringAsync();
 
                 if (!response.IsSuccessStatusCode)
@@ -208,8 +210,76 @@ namespace FrontEndTicketPro.Controllers
                     ModelState.AddModelError("", "Error desde API: " + rawJson);
                     return View("CrearExterno", model);
                 }
-            }       
+            }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GuardarUsuario(UsuarioEditarViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var vista = model.TipoUsuario == "E" ? "CrearExterno" : "CrearInterno";
+                return View(vista, model);
+            }
+
+            HttpResponseMessage response;
+
+            if (model.IdUsuario.HasValue)
+            {
+                // PUT → editar
+                var jsonContent = JsonSerializer.Serialize(model);
+                var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                response = await _http.PutAsync("api/usuario/actualizar", httpContent);
+            }
+            else
+            {
+                // POST → crear
+                if (model.TipoUsuario == "E")
+                    response = await _http.PostAsJsonAsync("api/usuario/crear-externo", model);
+                else
+                    response = await _http.PostAsJsonAsync("api/usuario/crear-interno", model);
+            }
+
+            var json = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                ModelState.AddModelError("", $"Error al guardar usuario: {json}");
+                var vistaError = model.TipoUsuario == "E" ? "CrearExterno" : "CrearInterno";
+                return View(vistaError, model);
+            }
+
+            // ✅ Solo intentar deserializar si es creación (POST)
+            if (!model.IdUsuario.HasValue)
+            {
+                try
+                {
+                    var resultado = JsonSerializer.Deserialize<UsuarioCreadoResponse>(json);
+
+                    if (resultado == null || resultado.idUsuario == 0)
+                    {
+                        ModelState.AddModelError("", "No se pudo obtener el ID del usuario creado.");
+                        var vistaError = model.TipoUsuario == "E" ? "CrearExterno" : "CrearInterno";
+                        return View(vistaError, model);
+                    }
+                }
+                catch (JsonException)
+                {
+                    ModelState.AddModelError("", "Respuesta inesperada del servidor al crear usuario.");
+                    var vistaError = model.TipoUsuario == "E" ? "CrearExterno" : "CrearInterno";
+                    return View(vistaError, model);
+                }
+            }
+
+            TempData["mensaje"] = model.IdUsuario.HasValue
+                ? "Usuario actualizado correctamente."
+                : "Usuario creado exitosamente.";
+
+            return RedirectToAction("Usuarios");
+        }
+
+
         public async Task<IActionResult> ContactosUsuario(int id)
         {
             var contactos = await _http.GetFromJsonAsync<List<ContactoUsuarioDTO>>($"api/contactos/usuario/{id}");
@@ -307,19 +377,70 @@ namespace FrontEndTicketPro.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> EditarExterno(int id)
+        public async Task<IActionResult> EditarUsuario(int id)
         {
-            var response = await _http.GetAsync($"api/usuario/externo/{id}");
+            var response = await _http.GetAsync($"api/usuario/obtener-user/{id}");
+
             if (!response.IsSuccessStatusCode)
             {
                 TempData["mensaje"] = "No se pudo cargar el usuario.";
                 return RedirectToAction("Usuarios");
             }
 
-            var usuario = await response.Content.ReadFromJsonAsync<UsuarioExternoViewModel>();
-            return View("CrearExterno", usuario); // reutiliza la misma vista
+            var json = await response.Content.ReadAsStringAsync();
+
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            try
+            {
+                var root = JsonDocument.Parse(json).RootElement;
+
+                if (!root.TryGetProperty("tipoUsuario", out var tipoElement))
+                {
+                    TempData["mensaje"] = "No se pudo determinar el tipo de usuario.";
+                    return RedirectToAction("Usuarios");
+                }
+
+                var tipo = tipoElement.GetString();
+
+                if (tipo == "E")
+                {
+                    var externo = JsonSerializer.Deserialize<UsuarioEditarViewModel>(json, options);
+
+                    if (externo == null)
+                    {
+                        TempData["mensaje"] = "No se pudo deserializar el usuario externo.";
+                        return RedirectToAction("Usuarios");
+                    }
+
+                    return View("CrearExterno", externo);
+                }
+                else if (tipo == "I")
+                {
+                    var interno = JsonSerializer.Deserialize<UsuarioEditarViewModel>(json, options);
+
+                    if (interno == null)
+                    {
+                        TempData["mensaje"] = "No se pudo deserializar el usuario interno.";
+                        return RedirectToAction("Usuarios");
+                    }
+
+                    return View("CrearInterno", interno);
+                }
+
+                TempData["mensaje"] = "Tipo de usuario no reconocido.";
+                return RedirectToAction("Usuarios");
+            }
+            catch (JsonException ex)
+            {
+                TempData["mensaje"] = $"Error al procesar los datos del usuario. {ex.Message}";
+                return RedirectToAction("Usuarios");
+            }
         }
 
-
+        
     }
 }
