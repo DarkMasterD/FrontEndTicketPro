@@ -21,14 +21,14 @@
                 <label asp-for="Nombre" class="form-label">
                     <i class="bi bi-person-fill me-1"></i>Nombre
                 </label>
-                <input asp-for="Nombre" class="form-control" />
+                <input asp-for="Nombre" class="form-control" required/>
                 <span asp-validation-for="Nombre" class="text-danger"></span>
             </div>
             <div class="col-md-6">
                 <label asp-for="Apellido" class="form-label">
                     <i class="bi bi-person-fill me-1"></i>Apellido
                 </label>
-                <input asp-for="Apellido" class="form-control" />
+                <input asp-for="Apellido" class="form-control" required/>
                 <span asp-validation-for="Apellido" class="text-danger"></span>
             </div>
         </div>
@@ -38,14 +38,14 @@
                 <label asp-for="Usuario" class="form-label">
                     <i class="bi bi-person-badge-fill me-1"></i>Usuario
                 </label>
-                <input asp-for="Usuario" class="form-control" />
+                <input asp-for="Usuario" class="form-control" required />
                 <span asp-validation-for="Usuario" class="text-danger"></span>
             </div>
             <div class="col-md-6">
                 <label asp-for="Empresa" class="form-label">
                     <i class="bi bi-building me-1"></i>Empresa
                 </label>
-                <input asp-for="Empresa" class="form-control" />
+                <input asp-for="Empresa" class="form-control" required />
                 <span asp-validation-for="Empresa" class="text-danger"></span>
             </div>
         </div>
@@ -55,7 +55,7 @@
                 <label asp-for="Email" class="form-label">
                     <i class="bi bi-envelope-at-fill me-1"></i>Correo Electrónico
                 </label>
-                <input asp-for="Email" type="email" class="form-control" />
+                <input asp-for="Email" type="email" class="form-control" required />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
 
@@ -65,7 +65,7 @@
                     <label asp-for="Contrasena" class="form-label">
                         <i class="bi bi-shield-lock me-1"></i>Contraseña
                     </label>
-                    <input asp-for="Contrasena" type="password" class="form-control" />
+                    <input asp-for="Contrasena" type="password" class="form-control" required/>
                     <span asp-validation-for="Contrasena" class="text-danger"></span>
                 }
                 else

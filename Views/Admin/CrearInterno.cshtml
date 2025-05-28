@@ -14,13 +14,13 @@
                 <label asp-for="Nombre" class="form-label"> 
                     <i class="bi bi-person-fill me-1"></i>Nombre
                 </label>
-                <input asp-for="Nombre" class="form-control" />
+                <input asp-for="Nombre" class="form-control" required />
             </div>
             <div class="col-md-6">
                 <label asp-for="Apellido" class="form-label">
                     <i class="bi bi-person-fill me-1"></i>Apellido
                 </label>
-                <input asp-for="Apellido" class="form-control" />
+                <input asp-for="Apellido" class="form-control" required />
             </div>
         </div>
 
@@ -29,13 +29,13 @@
                 <label asp-for="Usuario" class="form-label">
                     <i class="bi bi-person-fill me-1"></i>Usuario
                 </label>
-                <input asp-for="Usuario" class="form-control" />
+                <input asp-for="Usuario" class="form-control" required />
             </div>
             <div class="col-md-6">
                 <label asp-for="Email" class="form-label">
                     <i class="bi bi-envelope-at-fill"></i> Correo
                 </label>
-                <input asp-for="Email" type="email" class="form-control" />
+                <input asp-for="Email" type="email" class="form-control" required />
             </div>
         </div>
 
@@ -44,13 +44,13 @@
                 <label asp-for="Contrasena" class="form-label">
                     <i class="bi bi-shield-lock-fill"></i> Contraseña
                 </label>
-                <input asp-for="Contrasena" type="password" class="form-control" />
+                <input asp-for="Contrasena" type="password" class="form-control" required/>
             </div>
             <div class="col-md-6">
                 <label asp-for="Dui" class="form-label">
                     <i class="bi bi-fingerprint"></i> DUI
                 </label>
-                <input asp-for="Dui" class="form-control" id="inputDui" />
+                <input asp-for="Dui" class="form-control" id="inputDui" required/>
             </div>
         </div>
 
@@ -59,7 +59,7 @@
                 <label asp-for="Direccion" class="form-label">
                     <i class="bi bi-building"></i> Dirección
                 </label>
-                <input asp-for="Direccion" class="form-control" />
+                <input asp-for="Direccion" class="form-control" required />
             </div>
             <div class="col-md-6">
                 <label asp-for="IdRol" class="form-label">
