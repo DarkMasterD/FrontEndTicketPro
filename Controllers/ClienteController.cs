@@ -287,6 +287,34 @@ namespace FrontEndTicketPro.Controllers
 
             return RedirectToAction("MiInfo");
         }
+
+        [HttpPost]
+        [SessionAuthorize("cliente")]
+        public async Task<IActionResult> EditarContacto(ContactoEdit model)
+        {
+            var client = _httpClientFactory.CreateClient("ApiInsegura");
+            var apiUrl = _configuration["ApiBaseUrl"] + $"/cliente/contacto/" + model.IdContacto;
+
+            var json = JsonSerializer.Serialize(new
+            {
+                email = model.Email,
+                telefono = model.Telefono
+            });
+
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await client.PutAsync(apiUrl, content);
+
+            if (response.IsSuccessStatusCode)
+                TempData["Exito"] = "Contacto actualizado correctamente.";
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                TempData["Error"] = "Error al editar contacto: " + error;
+            }
+
+            return RedirectToAction("MiInfo");
+        }
     }
 }
 
