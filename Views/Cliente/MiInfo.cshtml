@@ -103,11 +103,28 @@
                             @foreach (var c in Model.Contactos)
                             {
                                 <tr>
-                                    <td>@(string.IsNullOrWhiteSpace(c.Email) ? "-" : c.Email)</td>
-                                    <td>@(string.IsNullOrWhiteSpace(c.Telefono) ? "-" : c.Telefono)</td>
+                                    <td colspan="3">
+                                        <form method="post" asp-action="EditarContacto">
+                                            <input type="hidden" name="IdContacto" value="@c.IdContactoUsuario" />
+                                            <div class="row g-2 align-items-center">
+                                                <div class="col-md-5">
+                                                    <input name="Email" class="form-control" value="@c.Email" />
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <input name="Telefono" class="form-control" value="@c.Telefono" />
+                                                </div>
+                                                <div class="col-md-2 d-grid">
+                                                    <button type="submit" class="btn btn-warning">
+                                                        <i class="bi bi-pencil-square"></i> Actualizar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
+
                     </table>
 
                     <hr />
@@ -166,3 +183,5 @@
         </div>
     </div>
 </div>
+
+

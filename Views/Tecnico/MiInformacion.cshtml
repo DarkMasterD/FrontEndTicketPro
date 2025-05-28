@@ -8,140 +8,154 @@
 
     <input type="hidden" id="id_usuario" value="@Context.Session.GetInt32("id_usuario")" />
 
-    <div class="row">
-        <div class="col-md-6">
-            <label class="form-label">👤 Nombre</label>
-            <input class="form-control" value="@Model.Nombre" readonly />
+    <form id="formActualizarPerfil" asp-action="ActualizarPerfil" method="post">
+        <input type="hidden" name="IdUsuario" value="@Context.Session.GetInt32("id_usuario")" />
 
-            <label class="form-label mt-3">📍 Dirección</label>
-            <input class="form-control" value="@Model.Direccion" readonly />
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" asp-for="Nombres"></label>
+                    <input asp-for="Nombres" class="form-control" />
+                    <span asp-validation-for="Nombres" class="text-danger"></span>
 
-            <button class="btn btn-primary mt-4 w-100" data-bs-toggle="modal" data-bs-target="#modalContrasenia">
-                🔒 Cambiar contraseña
-            </button>
+                    <label class="form-label" asp-for="Apellidos"></label>
+                    <input asp-for="Apellidos" class="form-control mt-2" />
+                    <span asp-validation-for="Apellidos" class="text-danger"></span>
+
+                </div>
+
+                <div class="form-group mt-3">
+                    <label class="form-label" asp-for="Direccion"></label>
+                    <input asp-for="Direccion" class="form-control" />
+                    <span asp-validation-for="Direccion" class="text-danger"></span>
+                </div>
+
+                <button type="submit" class="btn btn-success mt-4 w-100">
+                    💾 Guardar cambios
+                </button>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="form-label" asp-for="Usuario"></label>
+                    <input asp-for="Usuario" class="form-control" />
+                    <span asp-validation-for="Usuario" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <label class="form-label">Fecha de registro</label>
+                    <input class="form-control" value="@Model.FechaRegistro.ToString("dd/MM/yyyy")" readonly />
+                </div>
+
+                <button type="button" class="btn btn-dark mt-4 w-100" data-bs-toggle="modal" data-bs-target="#modalContacto">
+                    📞 Contactos
+                </button>
+
+                <button type="button" class="btn btn-outline-primary mt-2 w-100" data-bs-toggle="modal" data-bs-target="#modalContrasenia">
+                    🔐 Cambiar contraseña
+                </button>
+            </div>
         </div>
-
-        <div class="col-md-6">
-            <label class="form-label">👤 Usuario</label>
-            <input class="form-control" value="@Model.Usuario" readonly />
-
-            <label class="form-label mt-3">📅 Fecha de registro:</label>
-            <input class="form-control" value="@Model.FechaRegistro.ToString("dd/MMM/yyyy")" readonly />
-
-            <button class="btn btn-dark mt-4 w-100" data-bs-toggle="modal" data-bs-target="#modalContacto">
-                Ver información de contacto
-            </button>
-        </div>
-    </div>
+    </form>
 
     <div class="text-center mt-5">
         <a asp-action="Inicio" asp-controller="Tecnico" class="btn btn-outline-dark">Cancelar</a>
     </div>
 </div>
 
-<!-- Modal para cambiar contraseña -->
-<div class="modal fade" id="modalContrasenia" tabindex="-1" aria-labelledby="modalContraseniaLabel" aria-hidden="true">
+<!-- Modal Cambiar Contraseña -->
+<div class="modal fade" id="modalContrasenia" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">🔐 Cambiar la contraseña</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formCambiarContrasenia">
+            <form id="formCambiarContrasenia">
+                <div class="modal-header">
+                    <h5 class="modal-title">🔐 Cambiar contraseña</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Contraseña actual</label>
+                        <label>Contraseña actual</label>
                         <input type="password" class="form-control" id="actual" required />
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Nueva contraseña</label>
-                        <input type="password" class="form-control" id="nueva" required />
+                        <label>Nueva contraseña</label>
+                        <input type="password" class="form-control" id="nueva" required
+                               pattern="^(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,}$"
+                               title="Debe tener al menos 8 caracteres, una mayúscula, un número y un carácter especial" />
+
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Confirmar la contraseña</label>
-                        <input type="password" class="form-control" id="confirmar" required />
+                        <label>Confirmar contraseña</label>
+                        <input type="password" class="form-control" id="confirmar" required minlength="6" />
                     </div>
-                    <div class="d-flex justify-content-end">
-                        <button type="submit" class="btn btn-success">Guardar</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Guardar</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<!-- Modal para ver información de contacto -->
-<div class="modal fade" id="modalContacto" tabindex="-1" aria-labelledby="modalContactoLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<!-- Modal Contactos -->
+<div class="modal fade" id="modalContacto" tabindex="-1">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">📞 Información de contacto</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p><strong>📧 Correo:</strong> <span id="correoContacto">Cargando...</span></p>
-                <p><strong>📱 Teléfono:</strong> <span id="telefonoContacto">Cargando...</span></p>
+                <div class="mb-3">
+                    <h6>
+                        📞 Teléfonos
+                        <button id="btnNuevoTelefono" class="btn btn-sm btn-outline-primary float-end">
+                            + Agregar teléfono
+                        </button>
+                    </h6>
+                    <div id="listaTelefonos" class="mt-2">
+                        @foreach (var contacto in Model.Contactos.Where(c => !string.IsNullOrEmpty(c.Telefono)))
+                        {
+                            <div class="input-group mb-2 contacto-item" data-id="@contacto.Id" data-tipo="telefono">
+                                <input class="form-control" value="@contacto.Telefono" readonly />
+                                <button type="button" class="btn btn-outline-primary editar-contacto">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h6>
+                        📧 Correos electrónicos
+                        <button id="btnNuevoCorreo" class="btn btn-sm btn-outline-primary float-end">
+                            + Agregar correo
+                        </button>
+                    </h6>
+                    <div id="listaCorreos" class="mt-2">
+                        @foreach (var contacto in Model.Contactos.Where(c => !string.IsNullOrEmpty(c.Email)))
+                        {
+                            <div class="input-group mb-2 contacto-item" data-id="@contacto.Id" data-tipo="correo">
+                                <input class="form-control" value="@contacto.Email" readonly />
+                                <button type="button" class="btn btn-outline-primary editar-contacto">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
 </div>
 
 @section Scripts {
-    <script>
-        document.getElementById("formCambiarContrasenia").addEventListener("submit", async function (e) {
-            e.preventDefault();
-
-            const actual = document.getElementById("actual").value;
-            const nueva = document.getElementById("nueva").value;
-            const confirmar = document.getElementById("confirmar").value;
-            const idUsuario = document.getElementById("id_usuario").value;
-
-            if (nueva !== confirmar) {
-                alert("Las contraseñas no coinciden");
-                return;
-            }
-
-            const payload = {
-                idUsuario: parseInt(idUsuario),
-                actual: actual,
-                nueva: nueva
-            };
-
-            try {
-                const response = await fetch("https://localhost:7141/api/usuario/cambiar-contrasenia", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.text();
-                alert(result);
-                if (response.ok) {
-                    const modal = bootstrap.Modal.getInstance(document.getElementById("modalContrasenia"));
-                    modal.hide();
-                    setTimeout(() => window.location.reload(), 500);
-                }
-            } catch (err) {
-                alert("Error al intentar cambiar la contraseña.");
-                console.error(err);
-            }
-        });
-
-        document.querySelector('[data-bs-target="#modalContacto"]').addEventListener("click", async function () {
-            const id = document.getElementById("id_usuario").value;
-            console.log("ID técnico:", id);
-            try {
-                const response = await fetch(`https://localhost:7141/api/usuario/contacto/${id}`);
-                if (!response.ok) throw new Error("Error obteniendo contacto");
-                const contacto = await response.json();
-                document.getElementById("correoContacto").innerText = contacto.email || "Sin registro";
-                document.getElementById("telefonoContacto").innerText = contacto.telefono || "Sin registro";
-            } catch (err) {
-                alert("Error al obtener información de contacto");
-                console.error(err);
-            }
-        });
-    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/perfil-tecnico.js"></script>
 }
