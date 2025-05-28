@@ -1,9 +1,8 @@
-﻿@model FrontEndTicketPro.Models.Admin.UsuarioExternoViewModel
+﻿@model FrontEndTicketPro.Models.Admin.UsuarioEditarViewModel
 @{
     ViewData["Title"] = "Crear / Editar Usuario Externo";
 }
-
-@if (TempData["mensaje"] != null)
+@if (TempData.ContainsKey("mensaje"))
 {
     <div class="alert alert-info text-center">@TempData["mensaje"]</div>
 }
@@ -11,8 +10,9 @@
 <div class="container mt-5 mb-5 bg-white p-5 rounded shadow">
     <h3 class="text-center fw-bold mb-4">Crear / Editar Usuario</h3>
 
-    <form asp-action="GuardarExterno" asp-controller="Admin" method="post">
+    <form asp-action="GuardarUsuario" asp-controller="Admin" method="post">
         <input type="hidden" asp-for="IdUsuario" />
+        <input type="hidden" asp-for="TipoUsuario" value="E" />
 
         @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3 text-center" })
 
