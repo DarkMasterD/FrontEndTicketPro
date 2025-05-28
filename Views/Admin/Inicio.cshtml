@@ -13,9 +13,9 @@
             <a class="btn btn-dark" asp-controller="Ticket" asp-action="CrearTicket">
                 <i class="bi bi-plus-circle"></i> Crear un nuevo Ticket
             </a>
-            <button class="btn btn-secondary" disabled>
+            <a class="btn btn-secondary" asp-controller="Admin" asp-action="SeleccionarTipo">
                 <i class="bi bi-person-plus"></i> Crear un nuevo Usuario
-            </button>
+            </a>
         </div>
     </div>
 
@@ -105,8 +105,7 @@
                             </td>
                             <td>@t.Fecha.ToString("MM/dd/yy")</td>
                             <td>
-                                <a class="btn btn-sm text-light" style="background: #8FD344;">Asignar</a>
-                                @* <a class="btn btn-info btn-sm text-white" style="background: #3498DB">Ver</a> *@
+                                <a href="#" class="btn btn-sm text-light btn-asignar" style="background: #8FD344;" data-id="@t.IdTicket">Asignar</a>
                                 <a asp-controller="Admin" asp-action="DetalleTicket" asp-route-id="@t.IdTicket"
                                    class="btn btn-info btn-sm text-white" style="background: #3498DB">
                                     Ver
@@ -122,6 +121,43 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+
+    @* Modal asignar tarea *@
+    <div id="modalAsignar" class="modal fade" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4" style="border-radius: 1rem; border: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold">Agregar tarea al ticket #<span id="idTicketTexto"></span></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <input type="hidden" id="idTicketHidden" />
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Título de la tarea</label>
+                    <input type="text" class="form-control rounded-pill px-4 py-2" placeholder="Ingrese el título de la tarea" id="tituloTarea" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Seleccionar técnico</label>
+                    <select class="form-select rounded-pill px-4 py-2" id="tecnicoSelect">
+                        <option value="">Seleccione un técnico</option>
+                        <!-- Técnicos se llenarán dinámicamente -->
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Descripción tarea</label>
+                    <textarea class="form-control px-4 py-2" placeholder="Ingrese la descripción" id="descripcionTarea" rows="4" style="border-radius: 0.75rem;"></textarea>
+                </div>
+
+                <div class="d-flex justify-content-between mt-3">
+                    <button class="btn btn-link text-success" data-bs-dismiss="modal">Cancelar</button>
+                    <button class="btn text-white px-4" style="background-color: #8FD344;" id="btnGuardarTarea">Guardar</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -178,6 +214,63 @@
 
     });
 </script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modalAsignar = new bootstrap.Modal(document.getElementById("modalAsignar"));
+
+        document.querySelectorAll(".btn-asignar").forEach(btn => {
+            btn.addEventListener("click", async function (e) {
+                e.preventDefault();
+                const id = this.getAttribute("data-id");
+                document.getElementById("idTicketHidden").value = id;
+                document.getElementById("idTicketTexto").textContent = id;
+
+                // Cargar técnicos
+                const select = document.getElementById("tecnicoSelect");
+                select.innerHTML = `<option value="">Seleccione un técnico</option>`;
+
+                const res = await fetch("/Admin/ObtenerTecnicos");
+                const tecnicos = await res.json();
+
+                tecnicos.forEach(t => {
+                    const opt = document.createElement("option");
+                    opt.value = t.id;
+                    opt.textContent = t.nombre;
+                    select.appendChild(opt);
+                });
+
+                modalAsignar.show();
+            });
+        });
+
+        document.getElementById("btnGuardarTarea").addEventListener("click", async () => {
+            const idTicket = document.getElementById("idTicketHidden").value;
+            const titulo = document.getElementById("tituloTarea").value;
+            const idTecnico = document.getElementById("tecnicoSelect").value;
+            const descripcion = document.getElementById("descripcionTarea").value;
+
+            const respuesta = await fetch("https://localhost:7141/api/TareaTicket/crear", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    idTicket: parseInt(idTicket),
+                    titulo,
+                    idTecnico: parseInt(idTecnico),
+                    descripcion
+                })
+            });
+
+            if (respuesta.ok) {
+                alert("✅ Tarea asignada correctamente");
+                location.reload();
+            } else {
+                alert("❌ Error al asignar tarea");
+            }
+        });
+    });
+</script>
+
 
 
 
