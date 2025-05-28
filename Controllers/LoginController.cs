@@ -55,8 +55,23 @@ namespace FrontEndTicketPro.Controllers
 
                 string rolFinal = "cliente";
 
+                //if (tipoUsuario == "I")
+                //{
+                //    var rolResponse = await client.GetAsync(_configuration["ApiBaseUrl"] + $"/auth/rol/{idUsuario}");
+                //    if (rolResponse.IsSuccessStatusCode)
+                //    {
+                //        var rolJson = await rolResponse.Content.ReadAsStringAsync();
+                //        rolFinal = rolJson.Replace("\"", "").ToLower();
+
+                //        if (rolFinal == "administrador")
+                //            rolFinal = "admin";
+                //        else if (rolFinal == "técnico" || rolFinal == "tecnico") // <- con o sin tilde
+                //            rolFinal = "tecnico";
+                //    }
+                //}
                 if (tipoUsuario == "I")
                 {
+                    // Obtener el rol
                     var rolResponse = await client.GetAsync(_configuration["ApiBaseUrl"] + $"/auth/rol/{idUsuario}");
                     if (rolResponse.IsSuccessStatusCode)
                     {
@@ -65,20 +80,22 @@ namespace FrontEndTicketPro.Controllers
 
                         if (rolFinal == "administrador")
                             rolFinal = "admin";
-                        else if (rolFinal == "técnico" || rolFinal == "tecnico") // <- con o sin tilde
+                        else if (rolFinal == "técnico" || rolFinal == "tecnico")
                             rolFinal = "tecnico";
                     }
 
+                    // ✅ Obtener id_usuario_interno
                     var internoResponse = await client.GetAsync(_configuration["ApiBaseUrl"] + $"/auth/interno/{idUsuario}");
                     if (internoResponse.IsSuccessStatusCode)
                     {
                         var internoJson = await internoResponse.Content.ReadAsStringAsync();
                         var internoData = JsonSerializer.Deserialize<JsonElement>(internoJson);
-                        var idInterno = internoData.GetProperty("id_usuario_interno").GetInt32();
-                        HttpContext.Session.SetInt32("id_usuario_interno", idInterno);
-                    }
 
+                        var idUsuarioInterno = internoData.GetProperty("id_usuario_interno").GetInt32();
+                        HttpContext.Session.SetInt32("idUsuarioInterno", idUsuarioInterno); // ✅ Aquí lo guardás
+                    }
                 }
+
 
 
                 HttpContext.Session.SetInt32("id_usuario", idUsuario);
