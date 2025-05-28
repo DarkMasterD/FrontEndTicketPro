@@ -49,6 +49,23 @@ namespace FrontEndTicketPro.Controllers
             var http = _clientFactory.CreateClient();
             http.BaseAddress = new Uri("https://localhost:7141");
 
+            var response = await http.GetAsync("/api/ticket/gestion-tickets");
+            if (!response.IsSuccessStatusCode)
+            {
+                TempData["Error"] = "No se pudo obtener el historial.";
+                return RedirectToAction("Inicio");
+            }
+
+            var tickets = await response.Content.ReadFromJsonAsync<List<TicketResumenDTO>>();
+            return View(tickets);
+        }
+
+        [SessionAuthorize("tecnico")]
+        public async Task<IActionResult> MisTicketsTecnico()
+        {
+            var http = _clientFactory.CreateClient();
+            http.BaseAddress = new Uri("https://localhost:7141");
+
             int? idTecnico = HttpContext.Session.GetInt32("id_usuario");
             if (idTecnico == null)
             {
@@ -59,12 +76,12 @@ namespace FrontEndTicketPro.Controllers
             var response = await http.GetAsync($"/api/ticket/historial-tecnico/{idTecnico}");
             if (!response.IsSuccessStatusCode)
             {
-                TempData["Error"] = "No se pudo obtener el historial.";
+                TempData["Error"] = "No se pudo obtener los tickets asignados.";
                 return RedirectToAction("Inicio");
             }
 
-            var historial = await response.Content.ReadFromJsonAsync<List<HistorialTicketDTO>>();
-            return View(historial);
+            var tickets = await response.Content.ReadFromJsonAsync<List<HistorialTicketDTO>>();
+            return View(tickets);
         }
 
 

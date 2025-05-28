@@ -1,17 +1,19 @@
-﻿@model List<FrontEndTicketPro.Models.TicketResumenDTO>
+﻿@model List<FrontEndTicketPro.Models.HistorialTicketDTO>
 @{
-    ViewData["Title"] = "Historial de Tickets";
+    ViewData["Title"] = "Mis Tickets";
 }
 
 <div class="container mt-4 p-4 bg-white rounded shadow-sm">
-    <h3 class="fw-bold text-center mb-4">🗂️ Historial de Tickets</h3>
+    <h3 class="fw-bold text-center mb-4">📋 Mis Tickets</h3>
 
+    <!-- 🔎 Filtro por texto -->
     <div class="row mb-3">
         <div class="col-md-12">
-            <input type="text" class="form-control" id="busqueda" placeholder="🔍 Buscar por cualquier campo">
+            <input type="text" class="form-control" id="busqueda" placeholder="🔍 Buscar por título, estado, categoría o prioridad" />
         </div>
     </div>
 
+    <!-- 📅 Filtros por fecha -->
     <div class="row mb-4">
         <div class="col-md-6">
             <label class="form-label">Fecha inicio:</label>
@@ -26,7 +28,7 @@
     <table class="table table-hover">
         <thead>
             <tr>
-                <th>Titulo de Ticket</th>
+                <th>Título de Ticket</th>
                 <th>Estado</th>
                 <th>Categoría</th>
                 <th>Prioridad</th>
@@ -37,7 +39,7 @@
         <tbody id="tablaTickets">
             @foreach (var t in Model)
             {
-                <tr>
+                <tr data-id="@t.IdTicket">
                     <td>@t.Titulo</td>
                     <td>
                         @if (t.Estado == "Resuelto")
@@ -65,7 +67,7 @@
                         }
                         else if (t.Prioridad == "Importante")
                         {
-                            <span class="badge bg-info text-dark">🔹 Importante</span>
+                            <span class="badge bg-info text-dark">🔵 Importante</span>
                         }
                         else
                         {
@@ -74,7 +76,7 @@
                     </td>
                     <td>@t.Fecha.ToShortDateString()</td>
                     <td>
-                        <a href="@Url.Action("IndexDetalleTicket", "Ticket", new { id_ticket = t.IdTicket })" class="btn btn-sm btn-outline-dark">
+                        <a asp-controller="Ticket" asp-action="IndexDetalleTicket" asp-route-id_ticket="@t.IdTicket" class="btn btn-sm btn-outline-dark">
                             <i class="bi bi-info-circle"></i>
                         </a>
                     </td>
@@ -82,6 +84,11 @@
             }
         </tbody>
     </table>
+</div>
+<div class="text-center mt-4">
+    <button id="btnDescargarPDF" class="btn btn-success">
+        Descargar PDF Ticket seleccionado
+    </button>
 </div>
 
 @section Scripts {
@@ -120,5 +127,33 @@
         busquedaInput.addEventListener("input", filtrar);
         fechaInicio.addEventListener("change", filtrar);
         fechaFin.addEventListener("change", filtrar);
+    </script>
+    <script>
+        let ticketSeleccionado = null;
+
+        // ✅ Detectar fila seleccionada
+        document.querySelectorAll("#tablaTickets tr").forEach(row => {
+            row.addEventListener("click", function () {
+                // Quitar selección previa
+                document.querySelectorAll("#tablaTickets tr").forEach(r => r.classList.remove("table-active"));
+                // Marcar actual
+                this.classList.add("table-active");
+                // Guardar ID del ticket
+                ticketSeleccionado = this.getAttribute("data-id");
+            });
+        });
+
+        // ✅ Botón para descargar PDF
+        document.getElementById("btnDescargarPDF").addEventListener("click", function () {
+            if (!ticketSeleccionado) {
+                alert("Primero seleccione un ticket.");
+                return;
+            }
+
+            const url = `https://localhost:7141/api/pdf/ticket/${ticketSeleccionado}`;
+            window.open(url, "_blank"); // abrir en nueva pestaña
+            // o usar download:
+            // window.location.href = url;
+        });
     </script>
 }
